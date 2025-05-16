@@ -1,0 +1,1821 @@
+﻿<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+
+    <title>中国智能决策与数据预测</title>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <script type="text/javascript" src="js/china.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
+    <script type="text/javascript" src="js/js.js"></script>
+    <script type="text/javascript" src="js/Bubble.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        #indicator-select {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 280px;
+        }
+
+        select,
+        button,
+        input {
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #1E90FF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #187bcd;
+        }
+
+        .info-window {
+            max-width: 200px;
+        }
+
+        .hospital-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            color: black;
+            font-size: 15px;
+        }
+
+        .hospital-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        #location-info {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+            color: black;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 10px;
+
+        }
+
+        .input-group input {
+            flex: 1;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .input-group button {
+            width: auto;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .distance-info {
+            color: #1E90FF;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="head clearfix">
+
+
+        <h1 class="pulll_left">中国智能决策与数据预测</h1>
+        <div class="menu menu2 pulll_left">
+            <ul>
+                <li><a href="../计算机设计大赛第一部分/ccgg3.html">全国医疗资源分析</a></li>
+                <li><a href="../计算机设计大赛第二部分/1.html">全国医疗服务与卫生经济</a></li>
+                <li><a href="../计算机设计大赛第三部/3.html">广东省基层医疗实践</a></li>
+            </ul>
+        </div>
+
+        <div class="time" id="showTime">2018/6/12 17:00:12</div>
+        <script>
+            var t = null;
+            t = setTimeout(time, 1000);
+            function time() {
+                clearTimeout(t);
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();
+                var m = dt.getMinutes();
+                var s = dt.getSeconds();
+                document.getElementById("showTime").innerHTML = y + "/" + mt + "/" + day + " " + h + ":" + m + ":" + s + "";
+                t = setTimeout(time, 1000);
+            }
+
+        </script>
+    </div>
+    <div class="mainbox">
+
+        <ul class="clearfix nav1">
+            <li style="width: 65%">
+
+                <div class="box">
+                    <div class="boxnav mapc" style="height: 550px; position: relative">
+                        <div class="mapnav2">
+
+                        </div>
+                        <div id="container"></div>
+                        <div id="panel">
+                            <h3>医院科室筛选</h3>
+
+                            <div class="input-group">
+                                <input type="text" id="address-input" placeholder="输入您的地址或位置">
+                                <button id="search-address-btn">搜索</button>
+                            </div>
+
+                            <select id="department">
+                                <option value="">-- 请选择科室 --</option>
+                                <option value="重症医学">重症医学</option>
+                                <option value="整形外科">整形外科</option>
+                                <option value="眼科">眼科</option>
+                                <option value="血液科">血液科</option>
+                                <option value="胸外科">胸外科</option>
+                                <option value="心血管病">心血管病</option>
+                                <option value="心外科">心外科</option>
+                                <option value="小儿外科">小儿外科</option>
+                                <option value="小儿内科">小儿内科</option>
+                                <option value="消化科">消化科</option>
+                                <option value="生殖医学">生殖医学</option>
+                                <option value="肾脏病">肾脏科</option>
+                                <option value="神经外科">神经外科</option>
+                                <option value="神经内科">神经内科</option>
+                                <option value="烧伤科">烧伤科</option>
+                                <option value="普通外科">普通外科</option>
+                                <option value="皮肤科">皮肤科</option>
+                                <option value="内分泌科">内分泌科</option>
+                                <option value="泌尿外科">泌尿外科</option>
+                                <option value="麻醉科">麻醉科</option>
+                                <option value="临床药学">临床药学</option>
+                                <option value="老年医学">老年医学</option>
+                                <option value="口腔科">口腔科</option>
+                                <option value="康复医学">康复医学</option>
+                                <option value="精神医学">精神医学</option>
+                                <option value="呼吸科">呼吸科</option>
+                                <option value="骨科">骨科</option>
+                                <option value="妇产科">妇产科</option>
+                                <option value="风湿科">风湿科</option>
+                                <option value="耳鼻喉科">耳鼻喉科</option>
+                                <option value="传染感染科">传染感染科</option>
+                                <option value="超声医学">超声医学</option>
+                                <option value="肿瘤学">肿瘤学</option>
+                                <option value="全科医学">全科医学</option>
+                                <option value="疼痛学">疼痛学</option>
+                                <option value="罕见病">罕见病</option>
+                            </select>
+
+                            <div id="location-info">
+                                <p>请输入您的地址并选择科室，系统将显示医院距离和路线</p>
+                            </div>
+
+                            <div id="hospital-list">
+                                <h4>请选择科室查看医院排名</h4>
+                            </div>
+                        </div>
+
+                        <script src="https://api.map.baidu.com/api?v=3.0&ak=5ieMMexWmzB9jivTq6oCRX9j"></script>
+                        <script>
+                            var hospitalData = {
+                                "重症医学": [
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 10.802, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "东南大学附属中大医院", "score": 9.833, "lat": 32.0583, "lng": 118.7972 },
+                                    { "hospital": "四川大学华西医院", "score": 8.208, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 6.323, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "中山大学附属第一医院", "score": 6.073, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "哈尔滨医科大学附属第一医院", "score": 5.646, "lat": 45.7534, "lng": 126.6331 },
+                                    { "hospital": "中国医科大学附属第一医院", "score": 3.51, "lat": 41.7958, "lng": 123.4328 },
+                                    { "hospital": "中南大学湘雅医院", "score": 2.427, "lat": 28.2171, "lng": 112.9868 },
+                                    { "hospital": "武汉大学中南医院", "score": 1.979, "lat": 30.5468, "lng": 114.3686 },
+                                    { "hospital": "山东第一医科大学附属省立医院（山东省立医院）", "score": 1.219, "lat": 36.6759, "lng": 117.0234 }
+                                ],
+                                "整形外科": [
+                                    { "hospital": "上海交通大学医学院附属第九人民医院", "score": 10.865, "lat": 31.2212, "lng": 121.4739 },
+                                    { "hospital": "中国医学科学院整形外科医院", "score": 10.058, "lat": 39.8584, "lng": 116.2299 },
+                                    { "hospital": "南方医科大学南方医院", "score": 6.394, "lat": 23.1643, "lng": 113.3418 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 6.058, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 5.192, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "华中科技大学同济医学院附属协和医院", "score": 4.817, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 2.625, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "陆军军医大学第一附属医院", "score": 2.163, "lat": 29.5591, "lng": 106.5621 },
+                                    { "hospital": "中国医科大学附属第一医院", "score": 2.087, "lat": 41.7958, "lng": 123.4328 },
+                                    { "hospital": "北京大学第三医院", "score": 1.548, "lat": 40.0087, "lng": 116.3278 }
+                                ],
+                                "眼科": [
+                                    { "hospital": "中山大学中山眼科中心", "score": 11.076, "lat": 23.1200, "lng": 113.3290 },
+                                    { "hospital": "首都医科大学附属北京同仁医院", "score": 8.804, "lat": 39.9010, "lng": 116.4277 },
+                                    { "hospital": "复旦大学附属眼耳鼻喉科医院", "score": 7.978, "lat": 31.2056, "lng": 121.4463 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 6.63, "lat": 30.2437, "lng": 120.1627 },
+                                    { "hospital": "温州医科大学附属眼视光医院", "score": 5.761, "lat": 28.0193, "lng": 120.6767 },
+                                    { "hospital": "上海交通大学医学院附属第九人民医院", "score": 4.065, "lat": 31.2212, "lng": 121.4739 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 3.598, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "上海市第一人民医院", "score": 3.152, "lat": 31.2477, "lng": 121.4700 },
+                                    { "hospital": "天津市眼科医院", "score": 2.283, "lat": 39.1322, "lng": 117.1902 },
+                                    { "hospital": "北京大学人民医院", "score": 1.457, "lat": 39.9208, "lng": 116.3604 }
+                                ],
+                                "血液科": [
+                                    { "hospital": "北京大学人民医院", "score": 10.198, "lat": 39.9208, "lng": 116.3604 },
+                                    { "hospital": "中国医学科学院血液病医院（研究所）", "score": 10.17, "lat": 39.1293, "lng": 117.2228 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 8.453, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "苏州大学附属第一医院", "score": 7.774, "lat": 31.3089, "lng": 120.6234 },
+                                    { "hospital": "华中科技大学同济医学院附属协和医院", "score": 5.708, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 5.358, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "南方医科大学南方医院", "score": 3.075, "lat": 23.1643, "lng": 113.3418 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 2.726, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "陆军军医大学第二附属医院", "score": 2.453, "lat": 29.5578, "lng": 106.5623 },
+                                    { "hospital": "山东大学齐鲁医院", "score": 1.547, "lat": 36.6660, "lng": 117.0287 }
+                                ],
+                                "胸外科": [
+                                    { "hospital": "中国医学科学院肿瘤医院", "score": 11.157, "lat": 39.9050, "lng": 116.4298 },
+                                    { "hospital": "上海市胸科医院（暨上海交通大学附属胸科医院）", "score": 8.255, "lat": 31.2092, "lng": 121.4369 },
+                                    { "hospital": "上海市肺科医院", "score": 8.176, "lat": 31.2933, "lng": 121.4977 },
+                                    { "hospital": "四川大学华西医院", "score": 6.961, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "广州医科大学附属第一医院", "score": 5.706, "lat": 23.1049, "lng": 113.2692 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 4, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "北京大学人民医院", "score": 3.039, "lat": 39.9208, "lng": 116.3604 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 3.039, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "中山大学肿瘤防治中心", "score": 2.863, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "复旦大学附属肿瘤医院", "score": 1.431, "lat": 31.2015, "lng": 121.4437 }
+                                ],
+                                "心血管病": [
+                                    { "hospital": "中国医学科学院阜外医院", "score": 10.548, "lat": 39.9241, "lng": 116.3245 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 9.077, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "首都医科大学附属北京安贞医院", "score": 8.144, "lat": 39.9573, "lng": 116.4540 },
+                                    { "hospital": "中国人民解放军北部战区总医院", "score": 5.673, "lat": 41.7977, "lng": 123.4521 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 5.606, "lat": 30.2437, "lng": 120.1627 },
+                                    { "hospital": "广东省人民医院", "score": 3.288, "lat": 23.1200, "lng": 113.3290 },
+                                    { "hospital": "四川大学华西医院", "score": 3.135, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "哈尔滨医科大学附属第二医院", "score": 2.827, "lat": 45.7534, "lng": 126.6331 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 2.038, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "北京大学第一医院", "score": 1.625, "lat": 39.9357, "lng": 116.3724 }
+                                ],
+                                "心外科": [
+                                    { "hospital": "中国医学科学院阜外医院", "score": 11.478, "lat": 39.9241, "lng": 116.3245 },
+                                    { "hospital": "首都医科大学附属北京安贞医院", "score": 9.13, "lat": 39.9573, "lng": 116.4540 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 7.522, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "华中科技大学同济医学院附属协和医院", "score": 6.913, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "广东省人民医院", "score": 6.109, "lat": 23.1200, "lng": 113.3290 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 4.435, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "四川大学华西医院", "score": 3.457, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "中南大学湘雅二医院", "score": 2.826, "lat": 28.1953, "lng": 112.9805 },
+                                    { "hospital": "上海交通大学医学院附属上海儿童医学中心", "score": 2.37, "lat": 31.2077, "lng": 121.5215 },
+                                    { "hospital": "福建医科大学附属协和医院", "score": 1.196, "lat": 26.0720, "lng": 119.3020 }
+                                ],
+                                "小儿外科": [
+                                    { "hospital": "首都医科大学附属北京儿童医院", "score": 11.304, "lat": 39.9117, "lng": 116.3342 },
+                                    { "hospital": "复旦大学附属儿科医院", "score": 9.071, "lat": 31.1864, "lng": 121.4359 },
+                                    { "hospital": "浙江大学医学院附属儿童医院", "score": 6.375, "lat": 30.2532, "lng": 120.1677 },
+                                    { "hospital": "重庆医科大学附属儿童医院", "score": 6.304, "lat": 29.5588, "lng": 106.5633 },
+                                    { "hospital": "广州市妇女儿童医疗中心", "score": 5.339, "lat": 23.1049, "lng": 113.2692 },
+                                    { "hospital": "中国医科大学附属盛京医院", "score": 4.964, "lat": 41.7958, "lng": 123.4328 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 4.161, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "上海交通大学医学院附属新华医院", "score": 2.839, "lat": 31.2793, "lng": 121.5147 },
+                                    { "hospital": "上海交通大学医学院附属上海儿童医学中心", "score": 2.536, "lat": 31.2077, "lng": 121.5215 },
+                                    { "hospital": "首都儿科研究所", "score": 1.571, "lat": 39.9241, "lng": 116.4707 }
+                                ],
+                                "小儿内科": [
+                                    { "hospital": "复旦大学附属儿科医院", "score": 10.951, "lat": 31.1864, "lng": 121.4359 },
+                                    { "hospital": "首都医科大学附属北京儿童医院", "score": 10.012, "lat": 39.9117, "lng": 116.3342 },
+                                    { "hospital": "浙江大学医学院附属儿童医院", "score": 7.654, "lat": 30.2532, "lng": 120.1677 },
+                                    { "hospital": "重庆医科大学附属儿童医院", "score": 7.531, "lat": 29.5588, "lng": 106.5633 },
+                                    { "hospital": "上海交通大学医学院附属上海儿童医学中心", "score": 5.704, "lat": 31.2077, "lng": 121.5215 },
+                                    { "hospital": "北京大学第一医院", "score": 4.222, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "广州市妇女儿童医疗中心", "score": 3.617, "lat": 23.1049, "lng": 113.2692 },
+                                    { "hospital": "上海交通大学医学院附属新华医院", "score": 3.519, "lat": 31.2793, "lng": 121.5147 },
+                                    { "hospital": "四川大学华西第二医院", "score": 2.642, "lat": 30.6567, "lng": 104.0672 },
+                                    { "hospital": "中国医科大学附属盛京医院", "score": 1.704, "lat": 41.7958, "lng": 123.4328 }
+                                ],
+                                "消化科": [
+                                    { "hospital": "上海交通大学医学院附属仁济医院", "score": 8.92, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 8.848, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "海军军医大学第一附属医院", "score": 7.392, "lat": 31.2320, "lng": 121.4630 },
+                                    { "hospital": "中国人民解放军总医院", "score": 6.544, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 5.632, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "四川大学华西医院", "score": 5.6, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "首都医科大学附属北京友谊医院", "score": 4.632, "lat": 39.8997, "lng": 116.4194 },
+                                    { "hospital": "中山大学附属第一医院", "score": 3.224, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 1.736, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "南方医科大学南方医院", "score": 1.544, "lat": 23.1643, "lng": 113.3418 }
+                                ],
+                                "生殖医学": [
+                                    { "hospital": "北京大学第三医院", "score": 10.551, "lat": 40.0087, "lng": 116.3278 },
+                                    { "hospital": "郑州大学第一附属医院", "score": 8.184, "lat": 34.7466, "lng": 113.6583 },
+                                    { "hospital": "山东大学附属生殖医院", "score": 6.571, "lat": 36.6660, "lng": 117.0287 },
+                                    { "hospital": "中信湘雅生殖与遗传专科医院", "score": 5.939, "lat": 28.1953, "lng": 112.9805 },
+                                    { "hospital": "南京大学医学院附属鼓楼医院", "score": 5.143, "lat": 32.0415, "lng": 118.7778 },
+                                    { "hospital": "中山大学附属第一医院", "score": 5.041, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "重庆市妇幼保健院", "score": 4.878, "lat": 29.5588, "lng": 106.5633 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 2.959, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "上海交通大学医学院附属仁济医院", "score": 2.02, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "浙江大学医学院附属妇产科医院", "score": 1.408, "lat": 30.2496, "lng": 120.1637 }
+                                ],
+                                "肾脏病": [
+                                    { "hospital": "北京大学第一医院", "score": 9.471, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "中国人民解放军总医院", "score": 7.885, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "中国人民解放军东部战区总医院", "score": 6.931, "lat": 32.0415, "lng": 118.7778 },
+                                    { "hospital": "南方医科大学南方医院", "score": 5.552, "lat": 23.1643, "lng": 113.3418 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 4.54, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "中山大学附属第一医院", "score": 3.977, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 3.92, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 3.621, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "四川大学华西医院", "score": 2.724, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 2.69, "lat": 31.2288, "lng": 121.4747 }
+                                ],
+                                "神经外科": [
+                                    { "hospital": "首都医科大学附属北京天坛医院", "score": 11.278, "lat": 39.8856, "lng": 116.4067 },
+                                    { "hospital": "复旦大学附属华山医院", "score": 9.784, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "四川大学华西医院", "score": 6.289, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "首都医科大学宣武医院", "score": 6.134, "lat": 39.8964, "lng": 116.3782 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 4.773, "lat": 30.2437, "lng": 120.1627 },
+                                    { "hospital": "天津医科大学总医院", "score": 3.763, "lat": 39.1310, "lng": 117.1902 },
+                                    { "hospital": "中国人民解放军总医院", "score": 3.732, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "空军军医大学第二附属医院(唐都医院)", "score": 2.351, "lat": 34.2270, "lng": 109.0377 },
+                                    { "hospital": "中南大学湘雅医院", "score": 2.196, "lat": 28.2171, "lng": 112.9868 },
+                                    { "hospital": "中日友好医院", "score": 2.093, "lat": 39.9620, "lng": 116.4677 }
+                                ],
+                                "神经内科": [
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 9.359, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "首都医科大学附属北京天坛医院", "score": 8.949, "lat": 39.8856, "lng": 116.4067 },
+                                    { "hospital": "复旦大学附属华山医院", "score": 7.094, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "首都医科大学宣武医院", "score": 7.026, "lat": 39.8964, "lng": 116.3782 },
+                                    { "hospital": "四川大学华西医院", "score": 4.821, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "中山大学附属第一医院", "score": 4.06, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 3.684, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "中南大学湘雅医院", "score": 3.436, "lat": 28.2171, "lng": 112.9868 },
+                                    { "hospital": "福建医科大学附属第一医院", "score": 3.308, "lat": 26.0720, "lng": 119.3020 },
+                                    { "hospital": "中国人民解放军总医院", "score": 2.641, "lat": 39.9907, "lng": 116.3283 }
+                                ],
+                                "烧伤科": [
+                                    { "hospital": "陆军军医大学第一附属医院", "score": 10.604, "lat": 29.5591, "lng": 106.5621 },
+                                    { "hospital": "中国人民解放军总医院", "score": 8.416, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 8.337, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "海军军医大学第一附属医院", "score": 6.98, "lat": 31.2320, "lng": 121.4630 },
+                                    { "hospital": "北京积水潭医院", "score": 5.564, "lat": 39.9347, "lng": 116.3594 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 5.139, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 4.149, "lat": 30.2437, "lng": 120.1627 },
+                                    { "hospital": "南昌大学第一附属医院", "score": 2.436, "lat": 28.6833, "lng": 115.8500 },
+                                    { "hospital": "武汉市第三医院暨武汉大学附属同仁医院", "score": 2.129, "lat": 30.5468, "lng": 114.3686 },
+                                    { "hospital": "江南大学附属医院", "score": 1.426, "lat": 31.5754, "lng": 120.3175 }
+                                ],
+                                "普通外科": [
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 10.553, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 8.874, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "四川大学华西医院", "score": 8, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 6.165, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "中国人民解放军总医院", "score": 5.835, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 4.223, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 3.544, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "中山大学附属第一医院", "score": 3, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 2.243, "lat": 30.2437, "lng": 120.1627 },
+                                    { "hospital": "北京大学人民医院", "score": 1.194, "lat": 39.9208, "lng": 116.3604 }
+                                ],
+                                "皮肤科": [
+                                    { "hospital": "复旦大学附属华山医院", "score": 9.861, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "中国医学科学院皮肤病医院（研究所）", "score": 8.75, "lat": 32.0472, "lng": 118.7726 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 6.778, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "北京大学第一医院", "score": 6.63, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "中南大学湘雅医院", "score": 5.472, "lat": 28.2171, "lng": 112.9868 },
+                                    { "hospital": "中国医科大学附属第一医院", "score": 5.343, "lat": 41.7958, "lng": 123.4328 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 3.38, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 3.056, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "山东第一医科大学附属皮肤病医院", "score": 2.241, "lat": 36.6759, "lng": 117.0234 },
+                                    { "hospital": "中日友好医院", "score": 1.537, "lat": 39.9620, "lng": 116.4677 }
+                                ],
+                                "内分泌科": [
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 10.524, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 10.135, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "中国人民解放军总医院", "score": 6.278, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "中南大学湘雅二医院", "score": 4.635, "lat": 28.1953, "lng": 112.9805 },
+                                    { "hospital": "中国医科大学附属第一医院", "score": 4.048, "lat": 41.7958, "lng": 123.4328 },
+                                    { "hospital": "上海市第六人民医院", "score": 3.865, "lat": 31.1607, "lng": 121.4346 },
+                                    { "hospital": "四川大学华西医院", "score": 3.817, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "山东第一医科大学附属省立医院（山东省立医院）", "score": 3.675, "lat": 36.6759, "lng": 117.0234 },
+                                    { "hospital": "中山大学附属第一医院", "score": 2.302, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 1.794, "lat": 31.2258, "lng": 121.4983 }
+                                ],
+                                "泌尿外科": [
+                                    { "hospital": "中国人民解放军总医院", "score": 10.655, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "北京大学第一医院", "score": 8.095, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "四川大学华西医院", "score": 8.095, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "中山大学孙逸仙纪念医院", "score": 6.56, "lat": 23.0959, "lng": 113.3241 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 4.702, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "上海交通大学医学院附属仁济医院", "score": 3.857, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "海军军医大学第一附属医院", "score": 3.595, "lat": 31.2320, "lng": 121.4630 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 2.321, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 2.155, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "天津医科大学第二医院", "score": 1.214, "lat": 39.1064, "lng": 117.2171 }
+                                ],
+                                "麻醉科": [
+                                    { "hospital": "四川大学华西医院", "score": 9.248, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 7.207, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "上海交通大学医学院附属仁济医院", "score": 5.975, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 4.992, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "中国人民解放军总医院", "score": 4.595, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 3.942, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "南方医科大学南方医院", "score": 3.14, "lat": 23.1643, "lng": 113.3418 },
+                                    { "hospital": "郑州大学第一附属医院", "score": 3.107, "lat": 34.7466, "lng": 113.6583 },
+                                    { "hospital": "复旦大学附属华山医院", "score": 2.884, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "中南大学湘雅医院", "score": 2.372, "lat": 28.2171, "lng": 112.9868 }
+                                ],
+                                "临床药学": [
+                                    { "hospital": "北京大学第三医院", "score": 9.035, "lat": 40.0087, "lng": 116.3278 },
+                                    { "hospital": "华中科技大学同济医学院附属协和医院", "score": 8.547, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "中南大学湘雅二医院", "score": 5.488, "lat": 28.1953, "lng": 112.9805 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 5.407, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "郑州大学第一附属医院", "score": 4.86, "lat": 34.7466, "lng": 113.6583 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 3.616, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 2.942, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "四川大学华西医院", "score": 2.756, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "四川省人民医院", "score": 2.453, "lat": 30.6672, "lng": 104.0629 },
+                                    { "hospital": "苏州大学附属第一医院", "score": 1.651, "lat": 31.3089, "lng": 120.6234 }
+                                ],
+                                "老年医学": [
+                                    { "hospital": "北京医院", "score": 10.26, "lat": 39.9289, "lng": 116.4112 },
+                                    { "hospital": "中国人民解放军总医院", "score": 8.644, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "四川大学华西医院", "score": 7.712, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 6.863, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "复旦大学附属华东医院", "score": 5.932, "lat": 31.2472, "lng": 121.4788 },
+                                    { "hospital": "中南大学湘雅医院", "score": 3.945, "lat": 28.2171, "lng": 112.9868 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 3.411, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "广东省人民医院", "score": 2.767, "lat": 23.1200, "lng": 113.3290 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 1.795, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "中南大学湘雅二医院", "score": 1.521, "lat": 28.1953, "lng": 112.9805 }
+                                ],
+                                "口腔科": [
+                                    { "hospital": "北京大学口腔医院", "score": 10.673, "lat": 39.9882, "lng": 116.3198 },
+                                    { "hospital": "四川大学华西口腔医院", "score": 10.224, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "上海交通大学医学院附属第九人民医院", "score": 8.469, "lat": 31.2212, "lng": 121.4739 },
+                                    { "hospital": "空军军医大学第三附属医院（口腔医院）", "score": 7.255, "lat": 34.2668, "lng": 108.9405 },
+                                    { "hospital": "武汉大学口腔医院", "score": 6.786, "lat": 30.5487, "lng": 114.3625 },
+                                    { "hospital": "中山大学光华口腔医学院附属口腔医院", "score": 4.908, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "首都医科大学附属北京口腔医院", "score": 4.5, "lat": 39.9010, "lng": 116.4277 },
+                                    { "hospital": "南京医科大学附属口腔医院（江苏省口腔医院）", "score": 2.939, "lat": 32.0472, "lng": 118.7726 },
+                                    { "hospital": "浙江大学医学院附属口腔医院", "score": 2.265, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "中国医科大学附属口腔医院", "score": 1.245, "lat": 41.7958, "lng": 123.4328 }
+                                ],
+                                "康复医学": [
+                                    { "hospital": "四川大学华西医院", "score": 10.119, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "复旦大学附属华山医院", "score": 9.099, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "江苏省人民医院（南京医科大学第一附属医院）", "score": 6.832, "lat": 32.0472, "lng": 118.7726 },
+                                    { "hospital": "中国康复研究中心(北京博爱医院)", "score": 5.059, "lat": 39.8698, "lng": 116.3475 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 4.95, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "中山大学附属第三医院", "score": 4.851, "lat": 23.1093, "lng": 113.3339 },
+                                    { "hospital": "山东大学齐鲁医院", "score": 4.297, "lat": 36.6660, "lng": 117.0287 },
+                                    { "hospital": "北京大学第三医院", "score": 3.644, "lat": 40.0087, "lng": 116.3278 },
+                                    { "hospital": "南方医科大学珠江医院", "score": 2.03, "lat": 23.0800, "lng": 113.3444 },
+                                    { "hospital": "陆军军医大学第一附属医院", "score": 1.485, "lat": 29.5591, "lng": 106.5621 }
+                                ],
+                                "精神医学": [
+                                    { "hospital": "北京大学第六医院", "score": 10.824, "lat": 40.0087, "lng": 116.3278 },
+                                    { "hospital": "上海市精神卫生中心", "score": 9.662, "lat": 31.1758, "lng": 121.4530 },
+                                    { "hospital": "中南大学湘雅二医院", "score": 9.015, "lat": 28.1953, "lng": 112.9805 },
+                                    { "hospital": "四川大学华西医院", "score": 6.956, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "首都医科大学附属北京安定医院", "score": 6.162, "lat": 39.9241, "lng": 116.3794 },
+                                    { "hospital": "南京脑科医院", "score": 4.191, "lat": 32.0472, "lng": 118.7726 },
+                                    { "hospital": "广州医科大学附属脑科医院", "score": 4.015, "lat": 23.1049, "lng": 113.2692 },
+                                    { "hospital": "武汉大学人民医院", "score": 3.368, "lat": 30.5468, "lng": 114.3686 },
+                                    { "hospital": "北京回龙观医院", "score": 2.25, "lat": 40.0608, "lng": 116.3587 },
+                                    { "hospital": "西安交通大学第一附属医院", "score": 1.368, "lat": 34.2584, "lng": 108.9432 }
+                                ],
+                                "呼吸科": [
+                                    { "hospital": "广州医科大学附属第一医院", "score": 10.897, "lat": 23.1049, "lng": 113.2692 },
+                                    { "hospital": "中日友好医院", "score": 8.603, "lat": 39.9620, "lng": 116.4677 },
+                                    { "hospital": "四川大学华西医院", "score": 7.513, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 6.897, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 6.397, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 5.603, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "中国人民解放军总医院", "score": 4.218, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 2.769, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "首都医科大学附属北京朝阳医院", "score": 2.064, "lat": 39.9241, "lng": 116.4497 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 1.974, "lat": 30.2437, "lng": 120.1627 }
+                                ],
+                                "骨科": [
+                                    { "hospital": "北京积水潭医院", "score": 10.064, "lat": 39.9347, "lng": 116.3594 },
+                                    { "hospital": "上海市第六人民医院", "score": 8.679, "lat": 31.1607, "lng": 121.4346 },
+                                    { "hospital": "中国人民解放军总医院", "score": 7.936, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "北京大学第三医院", "score": 5.821, "lat": 40.0087, "lng": 116.3278 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 5.474, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "四川大学华西医院", "score": 4.641, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "河北医科大学第三医院", "score": 4, "lat": 38.0346, "lng": 114.4881 },
+                                    { "hospital": "海军军医大学第二附属医院", "score": 2.474, "lat": 31.2472, "lng": 121.4630 },
+                                    { "hospital": "北京大学人民医院", "score": 2, "lat": 39.9208, "lng": 116.3604 },
+                                    { "hospital": "天津市天津医院", "score": 1.256, "lat": 39.0681, "lng": 117.2097 }
+                                ],
+                                "妇产科": [
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 10.981, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 7.962, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "复旦大学附属妇产科医院", "score": 7.83, "lat": 31.2300, "lng": 121.4917 },
+                                    { "hospital": "北京大学第三医院", "score": 6.755, "lat": 40.0087, "lng": 116.3278 },
+                                    { "hospital": "浙江大学医学院附属妇产科医院", "score": 5.396, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "四川大学华西第二医院", "score": 4.189, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "北京大学人民医院", "score": 3.604, "lat": 39.9208, "lng": 116.3604 },
+                                    { "hospital": "山东大学齐鲁医院", "score": 3.604, "lat": 36.6660, "lng": 117.0287 },
+                                    { "hospital": "中山大学附属第一医院", "score": 2.17, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "上海交通大学医学院附属仁济医院", "score": 1.547, "lat": 31.2288, "lng": 121.4747 }
+                                ],
+                                "风湿科": [
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 11.588, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "北京大学人民医院", "score": 8.518, "lat": 39.9208, "lng": 116.3604 },
+                                    { "hospital": "上海交通大学医学院附属仁济医院", "score": 8.412, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "南京大学医学院附属鼓楼医院", "score": 5.211, "lat": 32.0472, "lng": 118.7726 },
+                                    { "hospital": "四川大学华西医院", "score": 4.228, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 4.009, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "中国人民解放军总医院", "score": 2.86, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "北京大学第一医院", "score": 2.465, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "哈尔滨医科大学附属第一医院", "score": 2.298, "lat": 45.7544, "lng": 126.6324 },
+                                    { "hospital": "空军军医大学第一附属医院（西京医院）", "score": 1.526, "lat": 34.2668, "lng": 108.9405 }
+                                ],
+                                "耳鼻喉科": [
+                                    { "hospital": "复旦大学附属眼耳鼻喉科医院", "score": 10.732, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "首都医科大学附属北京同仁医院", "score": 8.817, "lat": 39.9084, "lng": 116.4277 },
+                                    { "hospital": "中国人民解放军总医院", "score": 8.305, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 5.305, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "中山大学附属第一医院", "score": 5.11, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "上海交通大学医学院附属第九人民医院", "score": 4.22, "lat": 31.2212, "lng": 121.4739 },
+                                    { "hospital": "上海市第六人民医院", "score": 3.085, "lat": 31.1607, "lng": 121.4346 },
+                                    { "hospital": "四川大学华西医院", "score": 2.841, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "华中科技大学同济医学院附属协和医院", "score": 2.378, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "中南大学湘雅医院", "score": 2.183, "lat": 28.2171, "lng": 112.9868 }
+                                ],
+                                "传染感染科": [
+                                    { "hospital": "复旦大学附属华山医院", "score": 10.057, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 7.782, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 7.126, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "南方医科大学南方医院", "score": 6.701, "lat": 23.1643, "lng": 113.3418 },
+                                    { "hospital": "四川大学华西医院", "score": 4.092, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 3.954, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 3.644, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "中国人民解放军总医院", "score": 3.563, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "北京大学第一医院", "score": 2.908, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "中山大学附属第三医院", "score": 1.908, "lat": 23.1093, "lng": 113.3339 }
+                                ],
+                                "超声医学": [
+                                    { "hospital": "中国人民解放军总医院", "score": 9.372, "lat": 39.9907, "lng": 116.3283 },
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 8.058, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "四川大学华西医院", "score": 6.244, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "复旦大学附属中山医院", "score": 4.791, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "华中科技大学同济医学院附属协和医院", "score": 4.081, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 4, "lat": 30.2437, "lng": 120.1627 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 3.395, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "中山大学附属第一医院", "score": 3.14, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "上海交通大学医学院附属瑞金医院", "score": 2.477, "lat": 31.2288, "lng": 121.4747 },
+                                    { "hospital": "上海市第六人民医院", "score": 2.174, "lat": 31.1607, "lng": 121.4346 }
+                                ],
+                                "肿瘤学": [
+                                    { "hospital": "中国医学科学院肿瘤医院", "score": 10.923, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "中山大学肿瘤防治中心", "score": 9.41, "lat": 23.0993, "lng": 113.3247 },
+                                    { "hospital": "复旦大学附属肿瘤医院", "score": 8.872, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "北京大学肿瘤医院", "score": 6.795, "lat": 39.9620, "lng": 116.3475 },
+                                    { "hospital": "天津医科大学肿瘤医院", "score": 6.282, "lat": 39.0681, "lng": 117.2097 },
+                                    { "hospital": "山东省肿瘤医院暨山东省肿瘤防治研究院", "score": 4.769, "lat": 36.6660, "lng": 117.0287 },
+                                    { "hospital": "中国科学院大学附属肿瘤医院（浙江省肿瘤医院）", "score": 2.91, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "四川大学华西医院", "score": 2.821, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "江苏省肿瘤医院", "score": 1.423, "lat": 32.0472, "lng": 118.7726 },
+                                    { "hospital": "四川省肿瘤医院", "score": 0.987, "lat": 30.6588, "lng": 104.0644 }
+                                ],
+                                "全科医学": [
+                                    { "hospital": "复旦大学附属中山医院", "score": 9.542, "lat": 31.2258, "lng": 121.4983 },
+                                    { "hospital": "北京大学第一医院", "score": 7.444, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "中国医科大学附属第一医院", "score": 5.542, "lat": 41.7958, "lng": 123.4328 },
+                                    { "hospital": "浙江大学医学院附属邵逸夫医院", "score": 5.444, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 4.444, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "首都医科大学附属复兴医院", "score": 3.944, "lat": 39.9084, "lng": 116.4277 },
+                                    { "hospital": "哈尔滨医科大学附属第二医院", "score": 3.681, "lat": 45.7544, "lng": 126.6324 },
+                                    { "hospital": "四川大学华西医院", "score": 2.444, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "四川省人民医院", "score": 2.264, "lat": 30.6672, "lng": 104.0629 },
+                                    { "hospital": "遵义医科大学附属医院", "score": 2.25, "lat": 27.7078, "lng": 106.9362 }
+                                ],
+                                "疼痛学": [
+                                    { "hospital": "中日友好医院", "score": 9.818, "lat": 39.9620, "lng": 116.4677 },
+                                    { "hospital": "南昌大学第一附属医院", "score": 7.701, "lat": 28.6833, "lng": 115.8500 },
+                                    { "hospital": "山东第一医科大学附属省立医院（山东省立医院）", "score": 5.896, "lat": 36.6759, "lng": 117.0234 },
+                                    { "hospital": "上海交通大学医学院附属新华医院", "score": 4.792, "lat": 31.2712, "lng": 121.4806 },
+                                    { "hospital": "华中科技大学协和深圳医院", "score": 4.429, "lat": 22.5431, "lng": 114.0579 },
+                                    { "hospital": "四川大学华西医院", "score": 4.156, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "北京大学第三医院", "score": 3.065, "lat": 40.0087, "lng": 116.3278 },
+                                    { "hospital": "中国医科大学附属第一医院", "score": 1.753, "lat": 41.7958, "lng": 123.4328 },
+                                    { "hospital": "浙江大学医学院附属第一医院", "score": 1.675, "lat": 30.2496, "lng": 120.1637 },
+                                    { "hospital": "郑州大学第一附属医院", "score": 1.649, "lat": 34.7466, "lng": 113.6583 }
+                                ],
+                                "罕见病": [
+                                    { "hospital": "中国医学科学院北京协和医院", "score": 10.491, "lat": 39.9148, "lng": 116.3875 },
+                                    { "hospital": "浙江大学医学院附属第二医院", "score": 7.585, "lat": 30.2437, "lng": 120.1627 },
+                                    { "hospital": "福建医科大学附属第一医院", "score": 5.887, "lat": 26.0719, "lng": 119.2897 },
+                                    { "hospital": "四川大学华西医院", "score": 4.83, "lat": 30.6628, "lng": 104.0678 },
+                                    { "hospital": "北京大学第一医院", "score": 4.566, "lat": 39.9357, "lng": 116.3724 },
+                                    { "hospital": "华中科技大学同济医学院附属同济医院", "score": 3.528, "lat": 30.5688, "lng": 114.2891 },
+                                    { "hospital": "复旦大学附属儿科医院", "score": 3.472, "lat": 31.2107, "lng": 121.4403 },
+                                    { "hospital": "广州市妇女儿童医疗中心", "score": 2.679, "lat": 23.1049, "lng": 113.2692 },
+                                    { "hospital": "上海交通大学医学院附属新华医院", "score": 2.264, "lat": 31.2712, "lng": 121.4806 },
+                                    { "hospital": "中南大学湘雅医院", "score": 1.943, "lat": 28.2171, "lng": 112.9868 }
+                                ]
+                            };
+
+                            var map = new BMap.Map("container");
+                            map.centerAndZoom(new BMap.Point(116.404, 39.915), 5);
+                            map.enableScrollWheelZoom();
+
+                            map.addControl(new BMap.NavigationControl());
+                            map.addControl(new BMap.ScaleControl());
+
+                            var currentOverlays = [];
+                            var currentLocationMarker = null;
+                            var geoc = new BMap.Geocoder();
+                            var currentPosition = null;
+
+                            document.getElementById('department').addEventListener('change', function () {
+                                var department = this.value;
+                                var hospitalList = document.getElementById('hospital-list');
+
+                                clearOverlays();
+                                hospitalList.innerHTML = '';
+
+                                if (!department) {
+                                    hospitalList.innerHTML = '<h4>请选择科室查看医院排名</h4>';
+                                    return;
+                                }
+
+                                var hospitals = hospitalData[department];
+
+                                var listHtml = '<h4>' + department + '排名前10医院</h4><div id="hospitals-container">';
+                                hospitals.forEach(function (hospital, index) {
+                                    var distanceInfo = '';
+                                    if (currentPosition) {
+                                        var hospitalPoint = new BMap.Point(hospital.lng, hospital.lat);
+                                        var distance = map.getDistance(currentPosition, hospitalPoint);
+                                        distanceInfo = `<div class="distance-info">距离: ${(distance / 1000).toFixed(2)}公里</div>`;
+                                    }
+
+                                    listHtml += `
+													<div class="hospital-item" data-index="${index}">
+														<strong>${index + 1}.</strong> ${hospital.hospital} 
+														<span style="color:#666;float:right;">${hospital.score.toFixed(3)}</span>
+														${distanceInfo}
+													</div>
+												`;
+                                });
+                                listHtml += '</div>';
+                                hospitalList.innerHTML = listHtml;
+
+                                document.querySelectorAll('.hospital-item').forEach(item => {
+                                    item.addEventListener('click', function () {
+                                        var index = parseInt(this.getAttribute('data-index'));
+                                        var hospital = hospitals[index];
+                                        var point = new BMap.Point(hospital.lng, hospital.lat);
+
+                                        currentOverlays.forEach(overlay => {
+                                            if (overlay.setIcon) {
+                                                overlay.setIcon(new BMap.Icon("http://api.map.baidu.com/images/markers.png", new BMap.Size(23, 25), {
+                                                    offset: new BMap.Size(10, 25),
+                                                    imageOffset: new BMap.Size(0, 0)
+                                                }));
+                                            }
+                                        });
+
+                                        var marker = currentOverlays.find(overlay =>
+                                            overlay.getPosition &&
+                                            overlay.getPosition().lng === hospital.lng &&
+                                            overlay.getPosition().lat === hospital.lat
+                                        );
+
+                                        if (marker) {
+                                            marker.setIcon(new BMap.Icon("http://api.map.baidu.com/images/markers.png", new BMap.Size(23, 25), {
+                                                offset: new BMap.Size(10, 25),
+                                                imageOffset: new BMap.Size(0, -250)
+                                            }));
+                                            map.setCenter(marker.getPosition());
+
+                                            if (currentPosition) {
+                                                drawRoute(currentPosition, point);
+                                            }
+                                        }
+                                    });
+                                });
+
+                                hospitals.forEach(function (hospital) {
+                                    var point = new BMap.Point(hospital.lng, hospital.lat);
+                                    var marker = new BMap.Marker(point, {
+                                        icon: new BMap.Icon("http://api.map.baidu.com/images/markers.png", new BMap.Size(23, 25), {
+                                            offset: new BMap.Size(10, 25),
+                                            imageOffset: new BMap.Size(0, 0)
+                                        })
+                                    });
+
+                                    var infoContent = `
+													<div class="info-window">
+														<h4>${hospital.hospital}</h4>
+														<p><strong>科室:</strong> ${department}</p>
+														<p><strong>评分:</strong> ${hospital.score.toFixed(3)}</p>
+														<p><strong>排名:</strong> ${hospitals.indexOf(hospital) + 1}</p>
+												`;
+
+                                    if (currentPosition) {
+                                        var distance = map.getDistance(currentPosition, point);
+                                        infoContent += `<p><strong>距离:</strong> ${(distance / 1000).toFixed(2)}公里</p>`;
+                                    }
+
+                                    infoContent += `</div>`;
+
+                                    var infoWindow = new BMap.InfoWindow(infoContent);
+
+                                    marker.addEventListener('click', function () {
+                                        this.openInfoWindow(infoWindow);
+
+                                        if (currentPosition) {
+                                            drawRoute(currentPosition, point);
+                                        }
+                                    });
+
+                                    map.addOverlay(marker);
+                                    currentOverlays.push(marker);
+
+                                    var label = new BMap.Label((hospitals.indexOf(hospital) + 1).toString(), {
+                                        position: point,
+                                        offset: new BMap.Size(10, -10)
+                                    });
+                                    label.setStyle({
+                                        color: "white",
+                                        fontSize: "12px",
+                                        backgroundColor: "#1E90FF",
+                                        border: "none",
+                                        padding: "2px 6px",
+                                        borderRadius: "10px"
+                                    });
+                                    map.addOverlay(label);
+                                    currentOverlays.push(label);
+                                });
+
+                                if (hospitals.length > 0) {
+                                    var points = hospitals.map(function (h) {
+                                        return new BMap.Point(h.lng, h.lat);
+                                    });
+
+                                    if (currentPosition) {
+                                        points.push(currentPosition);
+                                    }
+
+                                    map.setViewport(points);
+                                }
+                            });
+
+                            document.getElementById('search-address-btn').addEventListener('click', function () {
+                                var address = document.getElementById('address-input').value.trim();
+                                if (!address) return;
+
+                                var locationInfo = document.getElementById('location-info');
+                                locationInfo.innerHTML = "正在搜索地址...";
+
+                                geoc.getPoint(address, function (point) {
+                                    if (point) {
+                                        currentPosition = point;
+                                        updateLocationMarker(point, "您的位置");
+
+                                        locationInfo.innerHTML = `
+														<strong>您的位置:</strong><br>
+														${address}<br>
+														经度: ${point.lng.toFixed(6)}<br>
+														纬度: ${point.lat.toFixed(6)}
+													`;
+
+                                        var department = document.getElementById('department').value;
+                                        if (department) {
+                                            document.getElementById('department').dispatchEvent(new Event('change'));
+                                        }
+                                    } else {
+                                        locationInfo.innerHTML = "无法找到该地址";
+                                    }
+                                }, "中国");
+                            });
+
+                            function updateLocationMarker(point, title) {
+                                if (currentLocationMarker) {
+                                    map.removeOverlay(currentLocationMarker);
+                                }
+
+                                currentLocationMarker = new BMap.Marker(point, {
+                                    icon: new BMap.Icon("http://api.map.baidu.com/images/markers.png", new BMap.Size(23, 25), {
+                                        offset: new BMap.Size(10, 25),
+                                        imageOffset: new BMap.Size(0, -125)
+                                    })
+                                });
+
+                                var label = new BMap.Label(title, {
+                                    position: point,
+                                    offset: new BMap.Size(15, -10)
+                                });
+                                label.setStyle({
+                                    color: "#1E90FF",
+                                    fontSize: "12px",
+                                    backgroundColor: "white",
+                                    border: "1px solid #1E90FF",
+                                    padding: "2px 6px",
+                                    borderRadius: "10px"
+                                });
+
+                                map.addOverlay(currentLocationMarker);
+                                map.addOverlay(label);
+                                currentOverlays.push(currentLocationMarker, label);
+                                map.panTo(point);
+                            }
+
+                            function drawRoute(startPoint, endPoint) {
+                                currentOverlays = currentOverlays.filter(overlay => !(overlay instanceof BMap.Polyline));
+
+                                var driving = new BMap.DrivingRoute(map, {
+                                    renderOptions: {
+                                        map: map,
+                                        autoViewport: true,
+                                        panel: null
+                                    },
+                                    onSearchComplete: function (results) {
+                                        if (driving.getStatus() == BMAP_STATUS_SUCCESS) {
+                                            var plan = results.getPlan(0);
+                                            var route = plan.getRoute(0);
+
+                                            var polyline = new BMap.Polyline(route.getPath(), {
+                                                strokeColor: "#1E90FF",
+                                                strokeWeight: 5,
+                                                strokeOpacity: 0.7
+                                            });
+                                            map.addOverlay(polyline);
+                                            currentOverlays.push(polyline);
+
+                                            map.setViewport([startPoint, endPoint]);
+                                        }
+                                    }
+                                });
+
+                                driving.search(startPoint, endPoint);
+                            }
+
+                            function clearOverlays() {
+                                currentOverlays.forEach(function (overlay) {
+                                    map.removeOverlay(overlay);
+                                });
+                                currentOverlays = [];
+
+                                if (currentLocationMarker) {
+                                    currentOverlays.push(currentLocationMarker);
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
+
+            </li>
+
+
+            <!-- <li style="width: 35%">
+                <div class="box">
+                    <div class="ai-chat-container" style="height: 550px; background: transparent">
+                        <div class="ai-chat-header" style="background: transparent; border-bottom: none">
+                            <div class="ai-avatar" style="background: transparent">🏥</div>
+                            <div class="ai-title">
+                                <h3 style="color: #fff">医院信息查询助手</h3>
+                                <p class="ai-subtitle" style="color: rgba(255,255,255,0.7)">AI医疗信息查询 · 仅供参考</p>
+                            </div>
+                        </div>
+
+                        <div class="ai-chat-messages" id="hospital-chat" style="background: transparent">
+                            <div class="ai-message ai-response">
+                                <div class="ai-avatar" style="background: transparent">🤖</div>
+                                <div class="message-content"
+                                    style="background: rgba(255,255,255,0.1); color: #fff; border: none">
+                                    <p>您好！我是医院信息查询助手，可以为您提供以下帮助：</p>
+                                    <ul>
+                                        <li>查询医院基本信息、科室设置</li>
+                                        <li>了解医院等级、特色专科</li>
+                                        <li>获取医院地址、联系方式</li>
+                                    </ul>
+                                    <p>请告诉我您想查询的医院名称或相关信息~</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-input-area" style="background: transparent; border-top: none">
+                            <div class="input-container" style="background: rgba(255,255,255,0.1)">
+                                <input type="text" id="hospital-search-input" placeholder="输入您想查询的医院或科室..."
+                                    class="chat-input" autocomplete="off" style="color: #fff">
+                                <button id="search-btn" class="send-btn">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="ai-disclaimer" style="color: rgba(255,255,255,0.5)">
+                                提示：AI生成内容仅供参考，请以医院官方信息为准
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const searchBtn = document.getElementById('search-btn');
+                            const searchInput = document.getElementById('hospital-search-input');
+                            const chatContainer = document.getElementById('hospital-chat');
+                            const API_KEY = 'sk-7e18b3f727e149338f5d8634e8d2acba';
+
+                            searchBtn.addEventListener('click', handleSearch);
+                            searchInput.addEventListener('keypress', function (e) {
+                                if (e.key === 'Enter') handleSearch();
+                            });
+
+                            async function handleSearch() {
+                                const query = searchInput.value.trim();
+                                if (!query) return;
+
+                                // 添加用户消息
+                                addMessage(query, 'user');
+                                searchInput.value = '';
+
+                                // 显示AI正在思考
+                                const thinkingMsg = addMessage('正在查询中...', 'ai', true);
+
+                                try {
+                                    // 调用DeepSeek API
+                                    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': `Bearer ${API_KEY}`
+                                        },
+                                        body: JSON.stringify({
+                                            model: "deepseek-chat",
+                                            messages: [
+                                                {
+                                                    role: "system",
+                                                    content: "你是一个专业的医院信息查询助手，回答要简洁明了，分点说明。不确定的信息要注明。"
+                                                },
+                                                {
+                                                    role: "user",
+                                                    content: query
+                                                }
+                                            ],
+                                            temperature: 0.3,
+                                            max_tokens: 1024
+                                        })
+                                    });
+
+                                    if (!response.ok) {
+                                        const errorData = await response.json();
+                                        throw new Error(errorData.error?.message || '请求失败');
+                                    }
+
+                                    const data = await response.json();
+                                    const resultText = data.choices[0].message.content;
+
+                                    // 移除"正在查询"消息
+                                    chatContainer.removeChild(thinkingMsg);
+
+                                    // 添加AI回复
+                                    addMessage(resultText, 'ai');
+                                } catch (error) {
+                                    console.error('API请求错误:', error);
+                                    chatContainer.removeChild(thinkingMsg);
+                                    addMessage(`抱歉，查询失败: ${error.message}`, 'ai');
+                                }
+                            }
+
+                            function addMessage(content, sender, isThinking = false) {
+                                const messageDiv = document.createElement('div');
+                                messageDiv.className = `ai-message ${sender === 'user' ? 'user-message' : 'ai-response'}`;
+
+                                if (sender === 'ai') {
+                                    messageDiv.innerHTML = `
+                          <div class="ai-avatar" style="background: transparent">${isThinking ? '⏳' : '🤖'}</div>
+                          <div class="message-content" style="background: rgba(255,255,255,0.1); color: #fff; border: none">
+                            ${formatMessage(content)}
+                          </div>
+                        `;
+                                } else {
+                                    messageDiv.innerHTML = `
+                          <div class="message-content" style="background: rgba(0,0,0,0.2); color: #fff">
+                            ${content}
+                          </div>
+                          <div class="user-avatar" style="background: transparent">👤</div>
+                        `;
+                                }
+
+                                chatContainer.appendChild(messageDiv);
+                                messageDiv.scrollIntoView({ behavior: 'smooth' });
+                                return messageDiv;
+                            }
+
+                            function formatMessage(text) {
+                                // 简单格式化Markdown样式
+                                return text
+                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                                    .replace(/\n/g, '<br>')
+                                    .replace(/^- (.*?)(<br>|$)/g, '• $1$2');
+                            }
+                        });
+                    </script>
+
+                    <style>
+                        .ai-chat-container {
+                            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                            display: flex;
+                            flex-direction: column;
+                            height: 100%;
+                            background: transparent;
+                            border-radius: 12px;
+                            overflow: hidden;
+                        }
+
+                        .ai-chat-header {
+                            display: flex;
+                            align-items: center;
+                            padding: 16px 20px;
+                        }
+
+                        .ai-avatar {
+                            width: 40px;
+                            height: 40px;
+                            color: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 20px;
+                            margin-right: 12px;
+                            flex-shrink: 0;
+                        }
+
+                        .ai-title h3 {
+                            margin: 0;
+                            font-size: 16px;
+                            font-weight: 600;
+                        }
+
+                        .ai-subtitle {
+                            margin: 2px 0 0;
+                            font-size: 12px;
+                        }
+
+                        .ai-chat-messages {
+                            flex: 1;
+                            padding: 16px;
+                            overflow-y: auto;
+                        }
+
+                        .ai-message {
+                            display: flex;
+                            margin-bottom: 16px;
+                            max-width: 85%;
+                        }
+
+                        .ai-response {
+                            align-self: flex-start;
+                        }
+
+                        .user-message {
+                            align-self: flex-end;
+                            flex-direction: row-reverse;
+                        }
+
+                        .message-content {
+                            padding: 12px 16px;
+                            border-radius: 18px;
+                            line-height: 1.5;
+                            font-size: 14px;
+                            word-break: break-word;
+                        }
+
+                        .ai-response .message-content {
+                            border-top-left-radius: 4px;
+                        }
+
+                        .user-message .message-content {
+                            border-top-right-radius: 4px;
+                        }
+
+                        .user-avatar {
+                            width: 32px;
+                            height: 32px;
+                            color: #fff;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            margin-left: 12px;
+                            flex-shrink: 0;
+                        }
+
+                        .ai-input-area {
+                            padding: 12px 16px;
+                        }
+
+                        .input-container {
+                            display: flex;
+                            align-items: center;
+                            border-radius: 24px;
+                            padding: 4px 4px 4px 16px;
+                        }
+
+                        .chat-input {
+                            flex: 1;
+                            border: none;
+                            background: transparent;
+                            padding: 10px 0;
+                            font-size: 14px;
+                            outline: none;
+                        }
+
+                        .chat-input::placeholder {
+                            color: rgba(255, 255, 255, 0.5);
+                        }
+
+                        .send-btn {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            background: rgba(255, 255, 255, 0.2);
+                            color: white;
+                            border: none;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        }
+
+                        .send-btn:hover {
+                            background: rgba(255, 255, 255, 0.3);
+                            transform: scale(1.05);
+                        }
+
+                        .send-btn:active {
+                            transform: scale(0.98);
+                        }
+
+                        .ai-disclaimer {
+                            font-size: 11px;
+                            text-align: center;
+                            margin-top: 8px;
+                        }
+
+                        /* 滚动条样式 */
+                        .ai-chat-messages::-webkit-scrollbar {
+                            width: 6px;
+                        }
+
+                        .ai-chat-messages::-webkit-scrollbar-track {
+                            background: transparent;
+                        }
+
+                        .ai-chat-messages::-webkit-scrollbar-thumb {
+                            background: rgba(255, 255, 255, 0.3);
+                            border-radius: 3px;
+                        }
+
+                        .ai-chat-messages::-webkit-scrollbar-thumb:hover {
+                            background: rgba(255, 255, 255, 0.5);
+                        }
+
+                        /* 响应式调整 */
+                        @media (max-width: 768px) {
+                            .ai-message {
+                                max-width: 90%;
+                            }
+                        }
+                    </style>
+                </div>
+            </li> -->
+
+            <li style="width: 35%">
+                <div class="box">
+                    <div class="ai-chat-container" style="height: 550px; background: transparent">
+                        <div class="ai-chat-header" style="background: transparent; border-bottom: none">
+                            <div class="ai-avatar" style="background: transparent">🏥</div>
+                            <div class="ai-title">
+                                <h3 style="color: #fff">医院信息查询助手</h3>
+                                <p class="ai-subtitle" style="color: rgba(255,255,255,0.7)">AI医疗信息查询 · 仅供参考</p>
+                            </div>
+                        </div>
+
+                        <div class="ai-chat-messages" id="hospital-chat" style="background: transparent">
+                            <div class="ai-message ai-response">
+                                <div class="ai-avatar" style="background: transparent">🤖</div>
+                                <div class="message-content"
+                                    style="background: rgba(255,255,255,0.1); color: #fff; border: none">
+                                    <p>您好！我是医院信息查询助手，可以为您提供以下帮助：</p>
+                                    <ul>
+                                        <li>查询医院基本信息、科室设置</li>
+                                        <li>了解医院等级、特色专科</li>
+                                        <li>获取医院地址、联系方式</li>
+                                    </ul>
+                                    <p>请告诉我您想查询的医院名称或相关信息~</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-input-area" style="background: transparent; border-top: none">
+                            <div class="input-container" style="background: rgba(255,255,255,0.1)">
+                                <input type="text" id="hospital-search-input" placeholder="输入您想查询的医院或科室..."
+                                    class="chat-input" autocomplete="off" style="color: #fff">
+                                <button id="search-btn" class="send-btn">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="ai-disclaimer" style="color: rgba(255,255,255,0.5)">
+                                提示：AI生成内容仅供参考，请以医院官方信息为准
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const searchBtn = document.getElementById('search-btn');
+                            const searchInput = document.getElementById('hospital-search-input');
+                            const chatContainer = document.getElementById('hospital-chat');
+
+                            // 从单独的文件或环境变量中获取 API 密钥
+                            let API_KEY;
+
+                            try {
+                                // 尝试从单独的 JS 文件加载 API 密钥
+                                API_KEY = window.HospitalAPIKey;
+                            } catch (error) {
+                                console.error('无法加载 API 密钥', error);
+                                // 提示用户设置 API 密钥
+                                addMessage('请在 settings.js 文件中配置您的 API 密钥', 'ai');
+                                return;
+                            }
+
+                            searchBtn.addEventListener('click', handleSearch);
+                            searchInput.addEventListener('keypress', function (e) {
+                                if (e.key === 'Enter') handleSearch();
+                            });
+
+                            async function handleSearch() {
+                                const query = searchInput.value.trim();
+                                if (!query) return;
+
+                                // 添加用户消息
+                                addMessage(query, 'user');
+                                searchInput.value = '';
+
+                                // 显示AI正在思考
+                                const thinkingMsg = addMessage('正在查询中...', 'ai', true);
+
+                                try {
+                                    // 调用DeepSeek API
+                                    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': `Bearer ${API_KEY}`
+                                        },
+                                        body: JSON.stringify({
+                                            model: "deepseek-chat",
+                                            messages: [
+                                                {
+                                                    role: "system",
+                                                    content: "你是一个专业的医院信息查询助手，回答要简洁明了，分点说明。不确定的信息要注明。"
+                                                },
+                                                {
+                                                    role: "user",
+                                                    content: query
+                                                }
+                                            ],
+                                            temperature: 0.3,
+                                            max_tokens: 1024
+                                        })
+                                    });
+
+                                    if (!response.ok) {
+                                        const errorData = await response.json();
+                                        throw new Error(errorData.error?.message || '请求失败');
+                                    }
+
+                                    const data = await response.json();
+                                    const resultText = data.choices[0].message.content;
+
+                                    // 移除"正在查询"消息
+                                    chatContainer.removeChild(thinkingMsg);
+
+                                    // 添加AI回复
+                                    addMessage(resultText, 'ai');
+                                } catch (error) {
+                                    console.error('API请求错误:', error);
+                                    chatContainer.removeChild(thinkingMsg);
+                                    addMessage(`抱歉，查询失败: ${error.message}`, 'ai');
+                                }
+                            }
+
+                            function addMessage(content, sender, isThinking = false) {
+                                const messageDiv = document.createElement('div');
+                                messageDiv.className = `ai-message ${sender === 'user' ? 'user-message' : 'ai-response'}`;
+
+                                if (sender === 'ai') {
+                                    messageDiv.innerHTML = `
+                          <div class="ai-avatar" style="background: transparent">${isThinking ? '⏳' : '🤖'}</div>
+                          <div class="message-content" style="background: rgba(255,255,255,0.1); color: #fff; border: none">
+                            ${formatMessage(content)}
+                          </div>
+                        `;
+                                } else {
+                                    messageDiv.innerHTML = `
+                          <div class="message-content" style="background: rgba(0,0,0,0.2); color: #fff">
+                            ${content}
+                          </div>
+                          <div class="user-avatar" style="background: transparent">👤</div>
+                        `;
+                                }
+
+                                chatContainer.appendChild(messageDiv);
+                                messageDiv.scrollIntoView({ behavior: 'smooth' });
+                                return messageDiv;
+                            }
+
+                            function formatMessage(text) {
+                                // 简单格式化Markdown样式
+                                return text
+                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                                    .replace(/\n/g, '<br>')
+                                    .replace(/^- (.*?)(<br>|$)/g, '• $1$2');
+                            }
+                        });
+                    </script>
+
+                    <style>
+                        .ai-chat-container {
+                            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                            display: flex;
+                            flex-direction: column;
+                            height: 100%;
+                            background: transparent;
+                            border-radius: 12px;
+                            overflow: hidden;
+                        }
+
+                        .ai-chat-header {
+                            display: flex;
+                            align-items: center;
+                            padding: 16px 20px;
+                        }
+
+                        .ai-avatar {
+                            width: 40px;
+                            height: 40px;
+                            color: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 20px;
+                            margin-right: 12px;
+                            flex-shrink: 0;
+                        }
+
+                        .ai-title h3 {
+                            margin: 0;
+                            font-size: 16px;
+                            font-weight: 600;
+                        }
+
+                        .ai-subtitle {
+                            margin: 2px 0 0;
+                            font-size: 12px;
+                        }
+
+                        .ai-chat-messages {
+                            flex: 1;
+                            padding: 16px;
+                            overflow-y: auto;
+                        }
+
+                        .ai-message {
+                            display: flex;
+                            margin-bottom: 16px;
+                            max-width: 85%;
+                        }
+
+                        .ai-response {
+                            align-self: flex-start;
+                        }
+
+                        .user-message {
+                            align-self: flex-end;
+                            flex-direction: row-reverse;
+                        }
+
+                        .message-content {
+                            padding: 12px 16px;
+                            border-radius: 18px;
+                            line-height: 1.5;
+                            font-size: 14px;
+                            word-break: break-word;
+                        }
+
+                        .ai-response .message-content {
+                            border-top-left-radius: 4px;
+                        }
+
+                        .user-message .message-content {
+                            border-top-right-radius: 4px;
+                        }
+
+                        .user-avatar {
+                            width: 32px;
+                            height: 32px;
+                            color: #fff;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 16px;
+                            margin-left: 12px;
+                            flex-shrink: 0;
+                        }
+
+                        .ai-input-area {
+                            padding: 12px 16px;
+                        }
+
+                        .input-container {
+                            display: flex;
+                            align-items: center;
+                            border-radius: 24px;
+                            padding: 4px 4px 4px 16px;
+                        }
+
+                        .chat-input {
+                            flex: 1;
+                            border: none;
+                            background: transparent;
+                            padding: 10px 0;
+                            font-size: 14px;
+                            outline: none;
+                        }
+
+                        .chat-input::placeholder {
+                            color: rgba(255, 255, 255, 0.5);
+                        }
+
+                        .send-btn {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            background: rgba(255, 255, 255, 0.2);
+                            color: white;
+                            border: none;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        }
+
+                        .send-btn:hover {
+                            background: rgba(255, 255, 255, 0.3);
+                            transform: scale(1.05);
+                        }
+
+                        .send-btn:active {
+                            transform: scale(0.98);
+                        }
+
+                        .ai-disclaimer {
+                            font-size: 11px;
+                            text-align: center;
+                            margin-top: 8px;
+                        }
+
+                        /* 滚动条样式 */
+                        .ai-chat-messages::-webkit-scrollbar {
+                            width: 6px;
+                        }
+
+                        .ai-chat-messages::-webkit-scrollbar-track {
+                            background: transparent;
+                        }
+
+                        .ai-chat-messages::-webkit-scrollbar-thumb {
+                            background: rgba(255, 255, 255, 0.3);
+                            border-radius: 3px;
+                        }
+
+                        .ai-chat-messages::-webkit-scrollbar-thumb:hover {
+                            background: rgba(255, 255, 255, 0.5);
+                        }
+
+                        /* 响应式调整 */
+                        @media (max-width: 768px) {
+                            .ai-message {
+                                max-width: 90%;
+                            }
+                        }
+                    </style>
+                </div>
+            </li>
+
+            <!-- 创建一个单独的 JS 文件来存储 API 密钥 -->
+            <script src="settings.js"></script>
+
+        </ul>
+
+        <div class="box" style="padding: 20px 0;height: 350px;">
+            <ul class="clearfix nav2 ">
+                <li style="width:25%">
+                    <div class="box">
+                        <div class="tit">医疗民生关键词云
+                            <div class="boxnav" style="height: 250px;">
+
+
+                                <div style="height: 200px; float: left; width: 100%">
+
+                                    <div class="text-b tit02" style="text-align: center;">关键词 — 医疗民生</div>
+                                    <div class="tagcloud">
+                                        <a class="b01 co01"
+                                            href="https://www.gov.cn/lianbo/bumen/202503/content_7016192.htm">分级诊疗</a>
+                                        <a class="b02 co02"
+                                            href="https://www.gov.cn/lianbo/bumen/202407/content_6964176.htm">医保支付改革</a>
+                                        <a class="b03 co05"
+                                            href="https://www.gov.cn/zhengce/202411/content_6985715.htm">老龄化应对</a>
+                                        <a class="b04 co02"
+                                            href="https://www.gov.cn/lianbo/bumen/202406/content_6957974.htm">医疗资源不均</a>
+                                        <a class="b03 co05"
+                                            href="https://www.gov.cn/zhengce/202503/content_7015140.htm">中医药发展</a>
+                                        <a class="b03 co01"
+                                            href="https://baijiahao.baidu.com/s?id=1826365563048495332&wfr=spider&for=pc">医疗科技</a>
+                                    </div>
+                                    <script type="text/javascript">
+                                        tagcloud({
+                                            selector: ".tagcloud",
+                                            fontsize: 6,
+                                            radius: 40,
+                                            mspeed: "slow",
+                                            ispeed: "slow",
+                                            direction: 0,
+                                            keep: false
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                </li>
+                <li style="width:25%">
+                    <div class="box">
+                        <div class="tit">2025-2030卫生支出预测
+                            <div class="boxnav prediction-box">
+                                <div class="prediction-result">
+                                    <div id="healthExpChart" style="height: 230px;"></div>
+                                </div>
+                            </div>
+                </li>
+                <li style="width:25%">
+                    <div class="box">
+                        <div class="tit">2025-2030医疗资源预测
+                            <div class="boxnav prediction-box">
+                                <div class="prediction-result">
+                                    <div id="medicalResourceChart" style="height: 230px;width: 500px;"></div>
+                                </div>
+                            </div>
+                </li>
+                <li style="width:25%">
+                    <div class="box">
+                        <div class="tit">医疗卫生体系关键词云
+                            <div class="boxnav" style="height: 250px;">
+                                <div style="height: 200px; float: left; width: 100%">
+                                    <div class="text-b tit02" style="text-align: center;">关键词 — 医疗卫生体系</div>
+                                    <div class="tagcloud">
+                                        <a class="b01 co01"
+                                            href="https://www.gov.cn/zhengce/content/202406/content_6955904.htm">公立医院改革</a>
+                                        <a class="b02 co02"
+                                            href="https://www.gov.cn/zhengce/content/2020-07/09/content_5525351.htm">医保基金监管</a>
+                                        <a class="b03 co05"
+                                            href="http://www.nhc.gov.cn/yaozs/s3582/202411/a81ba1bd8e964bbda0737c1e53f25b68.shtml">基层医疗服务</a>
+                                        <a class="b04 co02"
+                                            href="https://wjw.chengde.gov.cn/art/2025/4/16/art_464_1062647.html">公共卫生体系</a>
+                                        <a class="b01 co03"
+                                            href="http://www.bjrd.gov.cn/fwhd/bjrdzz/2024n/d8q/hybd08/202411/t20241119_3945686.html">药品集采</a>
+                                        <a class="b02 co04"
+                                            href="http://www.nhc.gov.cn/yaozs/s3582/202411/a81ba1bd8e964bbda0737c1e53f25b68.shtml">医联体建设</a>
+                                    </div>
+                                    <script type="text/javascript">
+                                        tagcloud({
+                                            selector: ".tagcloud",
+                                            fontsize: 6,
+                                            radius: 40,
+                                            mspeed: "slow",
+                                            ispeed: "slow",
+                                            direction: 0,
+                                            keep: false
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        const resourceData = {
+            years: [2019, 2020, 2021, 2022, 2023],
+            nurses: [444.50, 470.87, 501.94, 522.42, 563.71],
+            communityAdmissions: [339.52, 292.73, 319.30, 333.80, 480.42],
+            totalHealthExp: [65841.39, 72175.00, 76844.99, 85327.49, 90575.81],
+            govHealthExp: [18016.95, 21941.90, 20676.06, 24040.89, 24147.89],
+            socialHealthExp: [29150.57, 30273.67, 34963.26, 38354.67, 41676.80],
+            townshipAdmissions: [3909.39, 3383.35, 3223.00, 3239.03, 3992.06]
+        };
+
+        const predictYears = [2025, 2026, 2027, 2028, 2029, 2030];
+        const predictions = {
+            nurses: predictYears.map(y => linearPredict(resourceData.nurses, y)),
+            community: predictYears.map(y => linearPredict(resourceData.communityAdmissions, y)),
+            totalExp: predictYears.map(y => linearPredict(resourceData.totalHealthExp, y)),
+            govExp: predictYears.map(y => linearPredict(resourceData.govHealthExp, y)),
+            socialExp: predictYears.map(y => linearPredict(resourceData.socialHealthExp, y)),
+            township: predictYears.map(y => linearPredict(resourceData.townshipAdmissions, y))
+        };
+
+        window.onload = () => {
+            renderHealthExpChart();
+            renderMedicalResourceChart();
+        };
+
+        function linearPredict(dataArray, targetYear) {
+            const n = dataArray.length;
+            const sumX = resourceData.years.reduce((a, b) => a + b, 0);
+            const sumY = dataArray.reduce((a, b) => a + b, 0);
+            const sumXY = dataArray.reduce((a, b, i) => a + (resourceData.years[i] * b), 0);
+            const sumX2 = resourceData.years.reduce((a, b) => a + (b * b), 0);
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            return Number((slope * targetYear + intercept).toFixed(2));
+        }
+
+        function renderHealthExpChart() {
+            const chart = echarts.init(document.getElementById('healthExpChart'));
+
+            const option = {
+                textStyle: {
+                    color: '#fff'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: params => params.map(item =>
+                        `${item.marker} ${item.seriesName}<br/>${params[0].name}年: ${item.value}亿元`
+                    ).join('<br>')
+                },
+                legend: {
+                    data: ['卫生总费用', '政府支出', '社会支出'],
+                    textStyle: { color: '#fff' },
+                    bottom: 10
+                },
+                xAxis: {
+                    type: 'category',
+                    data: predictYears
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '亿元',
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.1)'
+                        }
+                    }
+                },
+                series: [
+                    createSeries('totalExp', '卫生总费用', '#EE6666'),
+                    createSeries('govExp', '政府支出', '#FAC858'),
+                    createSeries('socialExp', '社会支出', '#73C0DE')
+                ],
+                grid: {
+                    left: 60,
+                    right: 20,
+                    bottom: 60,
+                    containLabel: true
+                }
+            };
+
+            chart.setOption(option);
+
+            function createSeries(id, name, color) {
+                return {
+                    name: name,
+                    type: 'line',
+                    data: predictions[id],
+                    symbol: 'circle',
+                    smooth: true,
+                    itemStyle: { color: color }
+                };
+            }
+        }
+
+        function renderMedicalResourceChart() {
+            const chart = echarts.init(document.getElementById('medicalResourceChart'));
+
+            const option = {
+                textStyle: {
+                    color: '#fff'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: params => params.map(item =>
+                        `${item.marker} ${item.seriesName}<br/>${params[0].name}年: ${item.value}万人`
+                    ).join('<br>')
+                },
+                legend: {
+                    data: ['注册护士数', '社区卫生入院', '乡镇入院'],
+                    textStyle: { color: '#fff' },
+                    bottom: 10
+                },
+                xAxis: {
+                    type: 'category',
+                    data: predictYears
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '万人',
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255,255,255,0.1)'
+                        }
+                    }
+                },
+                series: [
+                    createSeries('nurses', '注册护士数', '#FF0000'),
+                    createSeries('community', '社区卫生入院', '#00FF00'),
+                    createSeries('township', '乡镇入院', '#00FFFF')
+                ],
+                grid: {
+                    left: 60,
+                    right: 20,
+                    bottom: 60,
+                    containLabel: true
+                }
+            };
+
+            chart.setOption(option);
+
+            function createSeries(id, name, color) {
+                return {
+                    name: name,
+                    type: 'line',
+                    data: predictions[id],
+                    symbol: 'circle',
+                    smooth: true,
+                    itemStyle: {
+                        color: color,
+                        borderWidth: 2
+                    },
+                    lineStyle: {
+                        width: 3
+                    }
+                };
+            }
+        }
+    </script>
+</body>
+
+</html>

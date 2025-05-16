@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>基于三级监测体系的医疗大数据可视化平台</title>
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <link rel="stylesheet" href="css/comon0.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/stylezx.css">
+  <link rel="stylesheet" type="text/css" href="css/style2.0.css">
+</head>
+<style>
+  .resized-image {
+    width: 700px;
+    height: auto;
+    object-fit: cover;
+    padding-top: 150px;
+  }
+</style>
+
+<body>
+
+  <div class="head clearfix">
+
+
+    <h1 class="pulll_left">全国医疗服务与卫生经济</h1>
+    <div class="menu menu2 pulll_left">
+      <ul>
+        <li><a href="../计算机设计大赛第一部分/ccgg3.html">全国医疗资源分析</a></li>
+        <li><a href="../计算机设计大赛第三部/3.html">广东省基层医疗实践</a></li>
+        <li><a href="../总体/index.html">中国智能决策与数据预测</a></li>
+      </ul>
+    </div>
+
+    <div class="time" id="showTime">2018/6/12 17:00:12</div>
+    <script>
+      var t = null;
+      t = setTimeout(time, 1000);
+      function time() {
+        clearTimeout(t);
+        dt = new Date();
+        var y = dt.getFullYear();
+        var mt = dt.getMonth() + 1;
+        var day = dt.getDate();
+        var h = dt.getHours();
+        var m = dt.getMinutes();
+        var s = dt.getSeconds();
+        document.getElementById("showTime").innerHTML = y + "/" + mt + "/" + day + " " + h + ":" + m + ":" + s + "";
+        t = setTimeout(time, 1000);
+      }
+
+    </script>
+  </div>
+  <div class="mainbox">
+    <ul class="clearfix">
+      <li>
+        <div class="boxall" style="height:930px;margin: 2 auto;
+            position: relative;">
+          <div class="alltitle">住院服务情况</div>
+          <div class="boxnav" id="echarts5"></div><br>
+          <div class="alltitle">医疗机构门诊服务情况</div>
+          <div class="boxnav" id="">
+            <div class="year-selector">
+              <label for="year-select">选择年份：</label>
+              <select id="year-select">
+                <option value="2019">2019年</option>
+                <option value="2020">2020年</option>
+                <option value="2021">2021年</option>
+                <option value="2022">2022年</option>
+                <option value="2023" selected>2023年</option>
+              </select>
+            </div>
+            <ul class="drqk clearfix">
+              <li>
+                <div class="icon"><img src="images/icona.png"></div>
+                <div><span>医疗卫生机构诊疗人次</span>
+                  <p><em id="item1-value">95.51</em><i>亿次</i></p>
+                </div>
+              </li>
+              <li>
+                <div class="icon"><img src="images/iconb.png"></div>
+                <div><span>医疗卫生机构门急诊诊疗人次数</span>
+                  <p><em id="item2-value">90.88</em><i>亿次</i></p>
+                </div>
+              </li>
+              <li>
+                <div class="icon"><img src="images/iconc.png"></div>
+                <div><span>医疗卫生机构观察室留观病例数</span>
+                  <p><em id="item3-value">3995.71</em><i>万人</i></p>
+                </div>
+              </li>
+              <li>
+                <div class="icon"><img src="images/icond.png"></div>
+                <div><span>医疗卫生机构门诊健康检查人数</span>
+                  <p><em id="item4-value">52479.78</em><i>万人</i></p>
+                </div>
+              </li>
+            </ul><br>
+            <div class="alltitle">卫生费用分析</div>
+            <div class="boxnav" id="">
+              <div class="year-selector">
+                <label for="year-select">选择年份：</label>
+                <select id="yearSelect">
+                  <option value="2019">2019年</option>
+                  <option value="2020">2020年</option>
+                  <option value="2021">2021年</option>
+                  <option value="2022">2022年</option>
+                  <option value="2023" selected>2023年</option>
+                </select>
+              </div>
+              <div class="boxnav" id="echarts6" style="height: 250px;"></div>
+            </div>
+          </div>
+        </div>
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const yearSelect = document.getElementById("year-select");
+            const data = [
+              { "指标": "医疗卫生机构诊疗人次(亿次)", "2023年": 95.51, "2022年": 84.16, "2021年": 84.72, "2020年": 77.41, "2019年": 87.2 },
+              { "指标": "医疗卫生机构门急诊诊疗人次数(亿次)", "2023年": 90.88, "2022年": 79.8, "2021年": 80.41, "2020年": 74.05, "2019年": 83.75 },
+              { "指标": "医疗卫生机构观察室留观病例数(万人)", "2023年": 3995.71, "2022年": 3411.13, "2021年": 3506.05, "2020年": 3142.33, "2019年": 4377.71 },
+              { "指标": "医疗卫生机构门诊健康检查人数(万人)", "2023年": 52479.78, "2022年": 50268.05, "2021年": 54873.03, "2020年": 43093.82, "2019年": 44353 }
+            ];
+
+            function updateData(year) {
+              const yearKey = `${year}年`;
+              document.getElementById("item1-value").textContent = data[0][yearKey];
+              document.getElementById("item2-value").textContent = data[1][yearKey];
+              document.getElementById("item3-value").textContent = data[2][yearKey];
+              document.getElementById("item4-value").textContent = data[3][yearKey];
+            }
+
+            yearSelect.addEventListener("change", function () {
+              const selectedYear = yearSelect.value;
+              updateData(selectedYear);
+            });
+            updateData("2023");
+          });
+        </script>
+      </li>
+      <li>
+
+        <section id="data_content">
+          <div class="data_content">
+            <div class="data_left fl">
+            </div>
+            <div class="data_c fl">
+              <div class="data_c_1">
+                <div id="contPar" class="contPar">
+                  <div id="page1" style="z-index:1">
+                    <div class="title0">医疗服务效能与卫生经济分析</div>
+                    <div class="title1">服务利用、资源配置、卫生费用、基本医疗、成本效益</div>
+                    <div id="drag-container" style="z-index: 1">
+                      <!-- <div id="spin-container">
+                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="infoBtn"
+                          src="picture/page1_0.png">
+                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="" src="picture/page1_1.png">
+                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="" src="picture/page1_2.png">
+                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="" src="picture/page1_1.png">
+                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="" src="picture/page1_2.png">
+                      </div> -->
+                      <div id="ground"></div>
+                    </div>
+                    <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="img3 png resized-image"
+                      src="images/03.png">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </li>
+      <li>
+
+        <div class="boxall" style="height: calc(104% - .15rem); margin: 0 auto;
+            position: relative;">
+          <div class="alltitle">基层医疗卫生机构诊疗服务分析</div>
+          <div class=" boxnav1 " id="echarts4">
+          </div>
+          <div class="alltitle">死亡率与医疗服务</div>
+          <div class="boxnav" id="echarts3"></div>
+
+        </div>
+      </li>
+    </ul>
+  </div>
+  <script type="text/javascript" src="js/echarts.min.js"></script>
+  <script language="JavaScript" src="js/js.js"></script>
+</body>
+
+</html>

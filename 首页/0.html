@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于三级监测体系的医疗大数据可视化平台</title>
+    <style>
+        :root {
+            --neon-blue: #00f7ff;
+            --cyber-purple: #6c3082;
+            --matrix-green: #0aff0a;
+        }
+
+        body {
+            font-family: 'Bahnschrift', 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #0a0e2d, #1a1f4b);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: #000d4a url(../bg.jpg) center center;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background:
+                linear-gradient(transparent 95%, rgba(255, 255, 255, 0.1) 95%),
+                linear-gradient(90deg, transparent 95%, rgba(255, 255, 255, 0.1) 95%);
+            background-size: 30px 30px;
+            opacity: 0.3;
+            z-index: -1;
+            animation: gridMove 20s linear infinite;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #0a0e2d 30%, #1a1f4b 100%);
+            padding: 4rem 0;
+            text-align: center;
+            border-bottom: 3px solid var(--neon-blue);
+            box-shadow: 0 0 40px rgba(0, 247, 255, 0.2);
+            position: relative;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 3rem;
+            text-shadow: 0 0 15px var(--neon-blue);
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #00f7ff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 247, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 0 50px rgba(0, 247, 255, 0.3);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #00f7ff, #0066ff);
+            opacity: 0.6;
+        }
+
+        .card-header {
+            padding: 2rem;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, rgba(0, 247, 255, 0.2), transparent);
+            border-left: 4px solid var(--neon-blue);
+        }
+
+        .card-body {
+            padding: 2rem;
+            position: relative;
+        }
+
+        .card-body p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .card-body ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card-body li {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid var(--neon-blue);
+            transition: transform 0.3s ease;
+        }
+
+        .card-body li:hover {
+            transform: translateX(10px);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(90deg, #00f7ff, #0066ff);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .btn::after {
+            content: '→';
+            margin-left: 1rem;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        @keyframes gridMove {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 30px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>基于三级监测体系的医疗大数据可视化平台</h1>
+    </div>
+
+    <div class="container">
+        <div class="cards">
+            <div class="card">
+                <div class="card-header">全国医疗资源分析</div>
+                <div class="card-body">
+                    <p><strong>2019-2023年床位与医护人员的城乡分布及发展趋势</strong></p>
+                    <ul>
+                        <li>全国医疗卫生资源总量年度变化</li>
+                        <li>城乡医疗资源配置差异对比</li>
+                        <li>基础设施和人力资源结构性调整趋势</li>
+                    </ul>
+                    <a href="../计算机设计大赛第一部分/ccgg3.html" class="btn">查看详细分析</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">全国医疗服务与卫生经济</div>
+                <div class="card-body">
+                    <p><strong>诊疗负荷、费用构成及健康结果关联性研究</strong></p><br>
+                    <ul>
+                        <li>住院/门诊服务量分析</li>
+                        <li>卫生费用分配比例研究</li>
+                        <li>母婴及儿童死亡率与医疗投入关系</li>
+                    </ul>
+                    <a href="../计算机设计大赛第二部分/1.html" class="btn">查看详细分析</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">广东省基层医疗实践</div>
+                <div class="card-body">
+                    <p><strong>乡镇服务网络、床位利用与村卫生室生态研究</strong></p>
+                    <ul>
+                        <li>基层医疗机构服务能力提升</li>
+                        <li>床位资源利用效率分析</li>
+                        <li>多元化办医模式影响研究</li>
+                    </ul>
+                    <a href="../计算机设计大赛第三部/3.html" class="btn">查看详细分析</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">中国智能决策与数据预测</div>
+                <div class="card-body">
+                    <p><strong>中国医疗资源预测与AI问询</strong></p><br>
+                    <ul>
+                        <li>未来预测</li>
+                        <li>医疗相关政策</li>
+                        <li>优质医疗资源分布与可及性</li>
+                    </ul>
+                    <a href="../总体/index.html" class="btn">查看详细分析</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

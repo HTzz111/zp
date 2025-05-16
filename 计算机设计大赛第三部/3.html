@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于三级监测体系的医疗大数据可视化平台</title>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #000d4a url(./images/bg.jpg) center center;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100% - 100px);
+        }
+
+        .left-column {
+            flex: 0 0 30%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #data_content {
+            flex: 0 0 40%;
+        }
+
+        .right-column {
+            flex: 0 0 30%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box {
+            border: 1px solid #3a84ff;
+            border-radius: 10px;
+            margin-bottom: 0px;
+            padding-left: 0px;
+
+        }
+
+        .chart-container {
+            height: 400px;
+        }
+
+        .tit {
+
+            font-size: 20px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        #gdMap {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #3a84ff;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .indicator-selector {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .indicator-btn {
+            display: inline-block;
+            padding: 5px 15px;
+            margin: 0 5px;
+            background: rgba(58, 132, 255, 0.3);
+            color: #fff;
+            border: 1px solid #3a84ff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="head clearfix">
+
+
+        <h1 class="pulll_left">广东省基层医疗实践</h1>
+        <div class="menu menu2 pulll_left">
+            <ul>
+                <li><a href="../计算机设计大赛第一部分/ccgg3.html">全国医疗资源分析</a></li>
+                <li><a href="../计算机设计大赛第二部分/1.html">全国医疗服务与卫生经济</a></li>
+                <li><a href="../总体/index.html">中国智能决策与数据预测</a></li>
+            </ul>
+        </div>
+
+        <div class="time" id="showTime">2018/6/12 17:00:12</div>
+
+    </div>
+
+    <div class="container">
+        <div class="left-column">
+            <div class="box">
+                <h2 class="tit">住院服务情况</h2>
+                <div id="admissionRateChart" class="chart-container"></div>
+                <h2 class="tit">床位资源利用效率年度对比</h2>
+                <div id="bedUtilizationChart" class="chart-container"></div>
+            </div>
+        </div>
+
+        <section id="data_content">
+            <div class="box" style="height:100%;">
+                <h2 class="tit">广东省医疗指标年度对比</h2>
+                <div class="indicator-selector">
+                    <span class="indicator-btn active" data-indicator="入院人数">入院人数</span>
+                    <span class="indicator-btn" data-indicator="出院人数">出院人数</span>
+                    <span class="indicator-btn" data-indicator="手术人次">手术人次</span>
+                </div>
+                <div id="gdMap" style="height:calc(100% - 80px);"></div>
+            </div>
+        </section>
+
+        <div class="right-column">
+            <div class="box">
+                <h2 class="tit">村卫生室生态</h2>
+                <div id="villageClinicChart" class="chart-container"></div>
+
+                <h2 class="tit">门诊服务负荷</h2>
+                <div id="outpatientServiceChart" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).replace(/\//g, '/');
+            document.getElementById('showTime').textContent = timeStr;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const admissionRateChart = echarts.init(document.getElementById('admissionRateChart'));
+            admissionRateChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        crossStyle: {
+                            color: '#999'
+                        }
+                    }
+                },
+                legend: {
+                    data: ['入院人数(万人)', '出院人数(万人)', '病床使用率(%)'],
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['2019', '2020', '2021', '2022', '2023'],
+                        axisPointer: {
+                            type: 'shadow'
+                        },
+                        axisLabel: {
+                            color: '#fff'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#3a84ff'
+                            }
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '人数(万人)',
+                        min: 1500,
+                        max: 2100,
+                        axisLabel: {
+                            formatter: '{value}',
+                            color: '#fff'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#3a84ff'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(58, 132, 255, 0.2)'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '使用率(%)',
+                        min: 60,
+                        max: 90,
+                        axisLabel: {
+                            formatter: '{value}%',
+                            color: '#fff'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#3a84ff'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(58, 132, 255, 0.2)'
+                            }
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '入院人数(万人)',
+                        type: 'bar',
+                        data: [1815.95, 1564.30, 1729.30, 1757.34, 2019.45],
+                        itemStyle: {
+                            color: '#5470C6'
+                        }
+                    },
+                    {
+                        name: '出院人数(万人)',
+                        type: 'bar',
+                        data: [1814.17, 1567.70, 1730.00, 1752.58, 2020.04],
+                        itemStyle: {
+                            color: '#91CC75'
+                        }
+                    },
+                    {
+                        name: '病床使用率(%)',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [82.2, 71.1, 74.3, 72.2, 78.8],
+                        itemStyle: {
+                            color: '#EE6666'
+                        }
+                    }
+                ]
+            });
+
+            const bedUtilizationChart = echarts.init(document.getElementById('bedUtilizationChart'));
+            bedUtilizationChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                legend: {
+                    data: ['病床工作日(日)', '病床使用率(%)'],
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['2019', '2020', '2021', '2022', '2023'],
+                    axisLabel: {
+                        color: '#fff'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#3a84ff'
+                        }
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '病床工作日(日)',
+                        min: 250,
+                        max: 310,
+                        axisLabel: {
+                            color: '#fff'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#3a84ff'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(58, 132, 255, 0.2)'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '使用率(%)',
+                        min: 60,
+                        max: 90,
+                        axisLabel: {
+                            color: '#fff'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#3a84ff'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(58, 132, 255, 0.2)'
+                            }
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '病床工作日(日)',
+                        type: 'line',
+                        data: [300.20, 260.20, 271.10, 263.50, 287.70],
+                        itemStyle: {
+                            color: '#5470C6'
+                        }
+                    },
+                    {
+                        name: '病床使用率(%)',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [82.2, 71.1, 74.3, 72.2, 78.8],
+                        itemStyle: {
+                            color: '#EE6666'
+                        }
+                    }
+                ]
+            });
+
+            const medicalData = {
+                years: ['2019', '2020', '2021', '2022', '2023'],
+                indicators: {
+                    '入院人数': [1815.95, 1564.30, 1729.30, 1757.34, 2019.45],
+                    '出院人数': [1835.69, 1562.14, 1624.35, 1411.27, 1537.12],
+                    '手术人次': [1009.56, 856.34, 892.45, 789.23, 1159.82]
+                }
+            };
+
+            let mapChart;
+            let cities = [];
+
+            function initMap(geoJSON) {
+                echarts.registerMap('GD', geoJSON);
+                cities = geoJSON.features.map(f => f.properties.name);
+
+                mapChart = echarts.init(document.getElementById('gdMap'));
+                updateMap('入院人数');
+            }
+
+            function updateMap(indicator) {
+                const values = medicalData.indicators[indicator];
+                const minVal = Math.min(...values);
+                const maxVal = Math.max(...values);
+
+                const options = medicalData.years.map((year, idx) => ({
+                    title: {
+                        text: `${year}年${indicator}分布`,
+                        textStyle: { color: '#fff', fontSize: 18 },
+                        subtext: `当前值: ${values[idx]}${indicator.includes('人数') ? '万人' : '万人次'}`,
+                        subtextStyle: { color: '#ccc' }
+                    },
+                    series: [{
+                        data: cities.map(city => ({
+                            name: city,
+                            value: values[idx],
+                            itemStyle: {
+                                emphasis: {
+                                    areaColor: '#ff9f43'
+                                }
+                            }
+                        }))
+                    }]
+                }));
+
+                mapChart.setOption({
+                    timeline: {
+                        data: medicalData.years,
+                        axisType: 'category',
+                        autoPlay: true,
+                        playInterval: 2000,
+                        left: '10%',
+                        right: '10%',
+                        symbol: 'diamond',
+                        lineStyle: { color: '#3a84ff' },
+                        label: {
+                            color: '#fff',
+                            formatter: (s) => `${s}年`
+                        }
+                    },
+                    baseOption: {
+                        visualMap: {
+                            min: minVal,
+                            max: maxVal,
+                            calculable: true,
+                            inRange: {
+                                color: ['#00f2fe', '#4facfe', '#ff70a6', '#ff0066']
+                            },
+                            textStyle: { color: '#fff' }
+                        },
+                        series: [{
+                            type: 'map',
+                            map: 'GD',
+                            roam: true,
+                            label: {
+                                show: true,
+                                color: '#fff',
+                                fontSize: 14
+                            },
+                            itemStyle: {
+                                areaColor: '#0a275b',
+                                borderColor: '#3a84ff',
+                                borderWidth: 1
+                            },
+                            emphasis: {
+                                label: { color: '#fff' },
+                                itemStyle: {
+                                    areaColor: '#3a84ff'
+                                }
+                            }
+                        }]
+                    },
+                    options: options
+                }, true);
+            }
+
+            $.getJSON('guangdong.json').done(initMap);
+
+            document.querySelectorAll('.indicator-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.indicator-btn').forEach(el => el.classList.remove('active'));
+                    this.classList.add('active');
+                    updateMap(this.dataset.indicator);
+                });
+            });
+
+            window.addEventListener('resize', () => mapChart.resize());
+
+            const villageClinicChart = echarts.init(document.getElementById('villageClinicChart'));
+            villageClinicChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        return params[0].name + '<br>' +
+                            params.map(item =>
+                                `${item.marker} ${item.seriesName}: ${item.value}个`
+                            ).join('<br>');
+                    }
+                },
+                legend: {
+                    data: ['2019年', '2020年', '2021年', '2022年', '2023年'],
+                    bottom: 10,
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                radar: {
+                    indicator: [
+                        { name: '村办', max: 15000 },
+                        { name: '乡卫生院设点', max: 2700 },
+                        { name: '联合办', max: 200 },
+                        { name: '私人办', max: 5900 },
+                        { name: '其他办', max: 4250 }
+                    ],
+                    shape: 'polygon',
+                    splitNumber: 4,
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.3)'
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#fff',
+                        formatter: value => `${value}个`
+                    },
+                    name: {
+                        textStyle: {
+                            color: '#fff',
+                            fontSize: 14,
+                            fontWeight: 'bold'
+                        }
+                    }
+                },
+                series: [{
+                    type: 'radar',
+                    data: [
+                        {
+                            value: [14453, 2016, 102, 5866, 3351],
+                            name: '2019年',
+                            lineStyle: {
+                                color: '#FF9F7F',
+                                width: 2
+                            }
+                        },
+                        {
+                            value: [13055, 2391, 169, 6061, 4211],
+                            name: '2020年',
+                            lineStyle: {
+                                color: '#FAC858',
+                                width: 2
+                            }
+                        },
+                        {
+                            value: [12813, 2573, 171, 5771, 4120],
+                            name: '2021年',
+                            lineStyle: {
+                                color: '#3BA272',
+                                width: 2
+                            }
+                        },
+                        {
+                            value: [12749, 2619, 180, 5653, 4103],
+                            name: '2022年',
+                            lineStyle: {
+                                color: '#73C0DE',
+                                width: 2
+                            }
+                        },
+                        {
+                            value: [12696, 2684, 198, 5444, 4105],
+                            name: '2023年',
+                            lineStyle: {
+                                color: '#5470C6',
+                                width: 2
+                            }
+                        }
+                    ],
+                    areaStyle: {
+                        opacity: 0.1
+                    },
+                    label: {
+                        show: true,
+                        color: '#fff',
+                        formatter: params => `${params.value}个`,
+                        position: 'top'
+                    }
+                }],
+                color: ['#FF9F7F', '#FAC858', '#3BA272', '#73C0DE', '#5470C6'],
+                textStyle: {
+                    color: '#fff'
+                }
+            });
+
+            const outpatientServiceChart = echarts.init(document.getElementById('outpatientServiceChart'));
+            outpatientServiceChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross',
+                        label: {
+                            backgroundColor: '#6a7985'
+                        }
+                    }
+                },
+                legend: {
+                    data: ['留观病例数(万人)', '健康检查人数(万人)'],
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['2019', '2020', '2021', '2022', '2023'],
+                    axisLabel: {
+                        color: '#fff'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#3a84ff'
+                        }
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '留观病例数(万人)',
+                        axisLabel: {
+                            color: '#fff'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#3a84ff'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(58, 132, 255, 0.2)'
+                            }
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '健康检查人数(万人)',
+                        axisLabel: {
+                            color: '#fff'
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#3a84ff'
+                            }
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: 'rgba(58, 132, 255, 0.2)'
+                            }
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '留观病例数(万人)',
+                        type: 'line',
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {
+                                    offset: 0,
+                                    color: 'rgba(84, 112, 198, 0.5)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(84, 112, 198, 0.1)'
+                                }
+                            ])
+                        },
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: [477.06, 361.54, 375.17, 317.37, 342.75]
+                    },
+                    {
+                        name: '健康检查人数(万人)',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                {
+                                    offset: 0,
+                                    color: 'rgba(238, 102, 102, 0.5)'
+                                },
+                                {
+                                    offset: 1,
+                                    color: 'rgba(238, 102, 102, 0.1)'
+                                }
+                            ])
+                        },
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: [5202.81, 5109.78, 7410.83, 6372.11, 6245.66]
+                    }
+                ]
+            });
+
+            window.addEventListener('resize', function () {
+                admissionRateChart.resize();
+                bedUtilizationChart.resize();
+                mapChart.resize();
+                villageClinicChart.resize();
+                outpatientServiceChart.resize();
+            });
+        });
+    </script>
+</body>
+
+</html>

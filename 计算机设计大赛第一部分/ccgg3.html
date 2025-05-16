@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于三级监测体系的医疗大数据可视化平台</title>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <script type="text/javascript" src="js/area_echarts.js"></script>
+    <script type="text/javascript" src="js/js.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/stylezx.css">
+    <link rel="stylesheet" type="text/css" href="css/style2.0.css">
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: #000d4a url(./images/bg.jpg) center center;
+            background-size: cover;
+            color: #fff;
+            font-size: .1rem;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .left-column {
+            flex: 0 0 30%;
+        }
+
+        #data_content {
+            flex: 0 0 40%;
+            order: 2;
+        }
+
+        .right-column {
+            flex: 0 0 30%;
+            order: 3;
+        }
+
+        .box {
+            width: 100%;
+            margin-bottom: 0px;
+            border: 1px solid #3a84ff;
+            background: rgba(6, 48, 109, .5);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 900px;
+            margin-bottom: 0px;
+            border: 1px solid #3a84ff;
+            background: rgba(6, 48, 109, .5);
+            border-radius: 10px;
+            padding: 20px;
+
+        }
+
+        .tit {
+
+            font-size: 20px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .resized-image {
+            width: 700px;
+            height: auto;
+            object-fit: cover;
+            padding-top: 150px;
+        }
+
+        .data-source {
+            text-align: right;
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="head clearfix">
+        <h1 class="pulll_left">全国医疗资源分析</h1>
+        <div class="menu menu2 pulll_left">
+            <ul>
+                <li><a href="../计算机设计大赛第二部分/1.html">全国医疗服务与卫生经济</a></li>
+                <li><a href="../计算机设计大赛第三部/3.html">广东省基层医疗实践</a></li>
+                <li><a href="../总体/index.html">中国智能决策与数据预测</a></li>
+            </ul>
+        </div>
+
+        <div class="time" id="showTime">2018/6/12 17:00:12</div>
+        <script>
+            var t = null;
+            t = setTimeout(time, 1000);
+            function time() {
+                clearTimeout(t);
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();
+                var m = dt.getMinutes();
+                var s = dt.getSeconds();
+                document.getElementById("showTime").innerHTML = y + "/" + mt + "/" + day + " " + h + ":" + m + ":" + s + "";
+                t = setTimeout(time, 1000);
+            }
+
+        </script>
+    </div>
+
+    <div class="container">
+        <div class="left-column">
+            <div class="box">
+                <div class="selector">
+                    <label for="yearSelect">选择年份:</label>
+                    <select id="yearSelect" onchange="updateData()">
+                        <option value="2019">2019年</option>
+                        <option value="2020">2020年</option>
+                        <option value="2021">2021年</option>
+                        <option value="2022">2022年</option>
+                        <option value="2023" selected>2023年</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="tit">医疗卫生资源指标</div>
+                <li>
+                    <h5>床位数</h5>
+                    <div class="jcnav">
+                        <img src="images/icon2.png">
+                        <div class="jcnavp">
+                            <div class="fora">
+                                <ol>医疗卫生机构床位数(万张)</ol>
+                                <span id="totalBeds">1017.37</span>
+                                <i class="text-d" id="totalBedsChange">+2.30</i>
+                                <div class="forb"></div>
+                            </div>
+                            <div class="fora">
+                                <ol>城市医疗卫生机构床位数(万张)</ol>
+                                <span id="cityBeds">532.24</span>
+                                <i class="text-d" id="cityBedsChange">+2.30</i>
+                                <div class="forb"></div>
+                            </div>
+                            <div class="fora">
+                                <ol>农村医疗卫生机构床位数(万张)</ol>
+                                <span id="ruralBeds">485.14</span>
+                                <i class="text-d" id="ruralBedsChange">+2.30</i>
+                                <div class="forb"></div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li>
+                    <h5>医护人员</h5>
+                    <div class="jcnav jcnav2">
+                        <img src="images/icon3.png">
+                        <div class="jcnavp">
+                            <div class="fora">
+                                <ol>执业医师数(万人)</ol>
+                                <span id="doctors">400.97</span>
+                                <i class="text-d" id="doctorsChange">+2.30</i>
+                            </div>
+                            <div class="fora">
+                                <ol>执业(助理)医师数(万人)</ol>
+                                <span id="assistantDoctors">478.21</span>
+                                <i class="text-d" id="assistantDoctorsChange">+2.30</i>
+                            </div>
+                            <div class="fora">
+                                <ol>注册护士数(万人)</ol>
+                                <span id="nurses">563.71</span>
+                                <i class="text-d" id="nursesChange">+2.30</i>
+                            </div>
+                            <div class="fora">
+                                <ol>药师数(万人)</ol>
+                                <span id="pharmacists">56.95</span>
+                                <i class="text-d" id="pharmacistsChange">+2.30</i>
+                            </div>
+                        </div>
+                    </div>
+                </li><br>
+                <div class="tit">各类机构病床使用率</div>
+                <div class="boxnav" id="" style="height: 329px;">
+                    <ul class="tqdb">
+                        <li>
+                            <div id="echart1"></div>
+                            <h3>三级医院病床使用率</h3>
+                        </li>
+                        <li>
+                            <div id="echart2"></div>
+                            <h3>基层医疗卫生机构病床使用率</h3>
+                        </li>
+                        <li>
+                            <div id="echart3"></div>
+                            <h3>专业公共卫生机构病床使用率</h3>
+                        </li>
+                        <li>
+                            <div id="echart4"></div>
+                            <h3>中西医结合医院病床使用率</h3>
+                        </li>
+                        <li>
+                            <div id="echart5"></div>
+                            <h3>乡镇卫生院病床使用率</h3>
+                        </li>
+                        <li>
+                            <div id="echart6"></div>
+                            <h3>妇幼保健院/所、站病床使用率</h3>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <section id="data_content">
+            <div class="data_content">
+                <div class="data_left fl">
+                </div>
+                <div class="data_c fl">
+                    <div class="data_c_1">
+                        <div id="contPar" class="contPar">
+                            <div id="page1" style="z-index:1">
+                                <div class="title0">全国医疗资源配置与结构优化</div>
+                                <div class="title1">康复、急救、药品、救护车、病历</div>
+                                <div id="drag-container" style="z-index: 1">
+                                    <!-- <div id="spin-container">
+                                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="infoBtn"
+                                            src="picture/page1_0.png">
+                                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class=""
+                                            src="picture/page1_1.png">
+                                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class=""
+                                            src="picture/page1_2.png">
+                                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class=""
+                                            src="picture/page1_1.png">
+                                        <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class=""
+                                            src="picture/page1_2.png">
+                                    </div> -->
+                                    <div id="ground"></div>
+                                </div>
+                                <img alt="更多资源：https://gitee.com/iGaoWei/big-data-view  " class="img3 png resized-image"
+                                    src="images/03.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="right-column">
+            <div class="chart-container">
+                <div class="tit">2019-2023年全国三级/二级医院诊疗数据分析 </div>
+                <div class="data-source" style="text-align: center;"> 数据来源：2019-2023年全国卫生健康事业发展统计公报<br>
+                    说明：三级医院和二级医院诊疗量、入院量占比由相关人次除以相关医院总人次得出</div>
+                <canvas id="hospitalChart" style="margin-top: 70px;margin-bottom: 70px;"></canvas>
+                <div class="tit">医疗卫生机构发展趋势</div>
+                <canvas id="lineChart" style="margin-top: 70px"></canvas>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            "2019": {
+                "doctors": 321.05,
+                "assistantDoctors": 386.69,
+                "nurses": 444.50,
+                "pharmacists": 48.34,
+                "totalBeds": 880.70,
+                "cityBeds": 435.15,
+                "ruralBeds": 445.54
+            },
+            "2020": {
+                "doctors": 340.17,
+                "assistantDoctors": 408.57,
+                "nurses": 470.87,
+                "pharmacists": 49.68,
+                "totalBeds": 910.07,
+                "cityBeds": 450.25,
+                "ruralBeds": 459.82
+            },
+            "2021": {
+                "doctors": 359.08,
+                "assistantDoctors": 428.76,
+                "nurses": 501.94,
+                "pharmacists": 52.09,
+                "totalBeds": 945.01,
+                "cityBeds": 497.04,
+                "ruralBeds": 447.97
+            },
+            "2022": {
+                "doctors": 372.18,
+                "assistantDoctors": 443.47,
+                "nurses": 522.42,
+                "pharmacists": 53.12,
+                "totalBeds": 974.99,
+                "cityBeds": 509.04,
+                "ruralBeds": 465.96
+            },
+            "2023": {
+                "doctors": 400.97,
+                "assistantDoctors": 478.21,
+                "nurses": 563.71,
+                "pharmacists": 56.95,
+                "totalBeds": 1017.37,
+                "cityBeds": 532.24,
+                "ruralBeds": 485.14
+            }
+        };
+
+        function updateData() {
+            const year = document.getElementById('yearSelect').value;
+            const yearData = data[year];
+
+            document.getElementById('doctors').textContent = yearData.doctors.toFixed(2);
+            document.getElementById('assistantDoctors').textContent = yearData.assistantDoctors.toFixed(2);
+            document.getElementById('nurses').textContent = yearData.nurses.toFixed(2);
+            document.getElementById('pharmacists').textContent = yearData.pharmacists.toFixed(2);
+
+            document.getElementById('totalBeds').textContent = yearData.totalBeds.toFixed(2);
+            document.getElementById('cityBeds').textContent = yearData.cityBeds.toFixed(2);
+            document.getElementById('ruralBeds').textContent = yearData.ruralBeds.toFixed(2);
+
+            if (year === '2019') {
+                document.getElementById('doctorsChange').textContent = '';
+                document.getElementById('assistantDoctorsChange').textContent = '';
+                document.getElementById('nursesChange').textContent = '';
+                document.getElementById('pharmacistsChange').textContent = '';
+                document.getElementById('totalBedsChange').textContent = '';
+                document.getElementById('cityBedsChange').textContent = '';
+                document.getElementById('ruralBedsChange').textContent = '';
+            } else {
+                const prevYear = parseInt(year) - 1;
+                const prevYearData = data[prevYear.toString()];
+
+                document.getElementById('doctorsChange').textContent = `+${((yearData.doctors - prevYearData.doctors) / prevYearData.doctors * 100).toFixed(2)}%`;
+                document.getElementById('assistantDoctorsChange').textContent = `+${((yearData.assistantDoctors - prevYearData.assistantDoctors) / prevYearData.assistantDoctors * 100).toFixed(2)}%`;
+                document.getElementById('nursesChange').textContent = `+${((yearData.nurses - prevYearData.nurses) / prevYearData.nurses * 100).toFixed(2)}%`;
+                document.getElementById('pharmacistsChange').textContent = `+${((yearData.pharmacists - prevYearData.pharmacists) / prevYearData.pharmacists * 100).toFixed(2)}%`;
+
+                document.getElementById('totalBedsChange').textContent = `+${((yearData.totalBeds - prevYearData.totalBeds) / prevYearData.totalBeds * 100).toFixed(2)}%`;
+                document.getElementById('cityBedsChange').textContent = `+${((yearData.cityBeds - prevYearData.cityBeds) / prevYearData.cityBeds * 100).toFixed(2)}%`;
+                document.getElementById('ruralBedsChange').textContent = `+${((yearData.ruralBeds - prevYearData.ruralBeds) / prevYearData.ruralBeds * 100).toFixed(2)}%`;
+            }
+        }
+
+        updateData();
+    </script>
+
+    <script>
+        const ctx = document.getElementById('hospitalChart').getContext('2d');
+        Chart.defaults.color = '#fff';
+
+        const hospitalChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['2019', '2020', '2021', '2022', '2023'],
+                datasets: [
+                    {
+                        label: '三级医院诊疗量（亿人次）',
+                        data: [20.6, 18, 22.3, 22.3, 26.3], // 三级医院诊疗量数据
+                        backgroundColor: 'rgba(5, 170, 210, 0.9)',
+                        borderRadius: { topLeft: 10, topRight: 10 },
+                        barThickness: 20
+                    },
+                    {
+                        label: '二级医院诊疗量（亿人次）',
+                        data: [13.4, 11.6, 12.5, 12, 12.2], // 二级医院诊疗量数据
+                        backgroundColor: 'rgba(102, 204, 25, 0.7)',
+                        borderRadius: { topLeft: 10, topRight: 10 },
+                        barThickness: 20
+                    },
+                    {
+                        label: '三级医院占比（%）',
+                        data: [53.65, 54.22, 57.47, 58.38, 61.74], // 三级医院占比数据
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderRadius: { topLeft: 10, topRight: 10 },
+                        barThickness: 20
+                    },
+                    {
+                        label: '二级医院占比（%）',
+                        data: [34.90, 34.94, 32.22, 31.41, 28.64], // 二级医院占比数据
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                        borderRadius: { topLeft: 10, topRight: 10 },
+                        barThickness: 20
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        title: { display: true, text: '诊疗量（亿人次）/占比（%）' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        title: { display: true, text: '年份' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 12 }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: '三级/二级医院诊疗量及占比对比（2019-2023）',
+                        font: { size: 16 }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: ['2019', '2020', '2021', '2022', '2023'],
+                datasets: [
+                    {
+                        label: '医疗卫生机构数（个）',
+                        data: [1007579, 1022922, 1030935, 1032918, 1070785],
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        fill: false
+                    },
+                    {
+                        label: '基层医疗卫生机构数（个）',
+                        data: [954390, 970036, 977790, 979768, 1016238],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function (context) {
+                                return context.dataset.label + ': ' + context.raw + ' 个';
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: '医疗卫生机构发展趋势 (2019-2024)',
+                        font: { size: 16 }
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        title: { display: true, text: '机构数量(个)' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        title: { display: true, text: '年份' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

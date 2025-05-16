@@ -1,0 +1,34 @@
+.fl{
+    float: left;
+}
+
+ .data_content{
+    height: 1000px;
+}
+
+/*左边*/
+.data_content .data_left{
+    width: 24%;
+    height: 100%;
+}
+/* .data_content .data_left .left_top{
+    width: 100% ;
+    height: calc(60% - 20px);
+} */
+
+/*中间*/
+.data_content .data_c{
+    width: 60%;
+    height: 100%
+}
+.data_content .data_c .data_c_1{
+    width: calc(100% - 50px);
+    height: calc(70% - 15px);
+    position: relative;
+    margin-bottom: 35px;
+    margin-left: 25px;
+}
+
+/* .fontInner span{
+    display:inline-block;
+} */

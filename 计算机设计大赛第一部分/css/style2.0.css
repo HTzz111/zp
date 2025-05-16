@@ -1,0 +1,38 @@
+﻿.img2,
+#page1 .img3,
+#page1 .img4,
+#page1 .img5,
+#page1 .img6,
+
+.title0,
+.title1 {
+    position: absolute;
+    top: 50%;
+    left: 50%
+}
+
+.title0,
+.title1 {
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #2ec0f6;
+    font-size: 30px;
+    height: 70px;
+    line-height: 70px;
+    margin: -300px 0 0 0;
+    z-index: 1
+}
+
+.title1 {
+    color: white;
+    font-size: 20px;
+    height: 30px;
+    line-height: 30px;
+    margin: -230px 0 0 0
+}
+
+#page1 .img3 {
+    margin: -280px 0 0 -260px;
+    z-index: 0;
+}
